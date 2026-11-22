@@ -1,0 +1,262 @@
+[
+  {
+    "id": "unauth_GET__api_admin_products",
+    "description": "Unauthenticated call to GET /api/admin/products must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.755Z"
+  },
+  {
+    "id": "unauth_POST__api_admin_products",
+    "description": "Unauthenticated call to POST /api/admin/products must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.769Z"
+  },
+  {
+    "id": "unauth_PATCH__api_admin_products_14_day_home_reset_kit",
+    "description": "Unauthenticated call to PATCH /api/admin/products/14-day-home-reset-kit must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.787Z"
+  },
+  {
+    "id": "unauth_DELETE__api_admin_products_test_productivity_playbook",
+    "description": "Unauthenticated call to DELETE /api/admin/products/test-productivity-playbook must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.802Z"
+  },
+  {
+    "id": "unauth_GET__api_admin_collections",
+    "description": "Unauthenticated call to GET /api/admin/collections must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.809Z"
+  },
+  {
+    "id": "unauth_POST__api_admin_collections",
+    "description": "Unauthenticated call to POST /api/admin/collections must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.834Z"
+  },
+  {
+    "id": "unauth_GET__api_admin_coupons",
+    "description": "Unauthenticated call to GET /api/admin/coupons must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.847Z"
+  },
+  {
+    "id": "unauth_POST__api_admin_coupons",
+    "description": "Unauthenticated call to POST /api/admin/coupons must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.900Z"
+  },
+  {
+    "id": "unauth_GET__api_admin_assets",
+    "description": "Unauthenticated call to GET /api/admin/assets must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.911Z"
+  },
+  {
+    "id": "unauth_POST__api_admin_assets",
+    "description": "Unauthenticated call to POST /api/admin/assets must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:06.926Z"
+  },
+  {
+    "id": "non_admin_forbidden",
+    "description": "Authenticated customer request to admin API must return 403 Forbidden",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "data": {
+        "error": "Access denied. Caller does not have administrative privileges.",
+        "code": "FORBIDDEN_INSUFFICIENT_ROLE"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:08.090Z"
+  },
+  {
+    "id": "admin_get_products",
+    "description": "Authorized admin GET /api/admin/products returns 200",
+    "status": "pass",
+    "details": {
+      "status": 200,
+      "count": 3
+    },
+    "timestamp": "2026-11-21T11:23:08.368Z"
+  },
+  {
+    "id": "zod_product_malformed",
+    "description": "Zod rejects product payload missing slug and valid title",
+    "status": "pass",
+    "details": {
+      "status": 400,
+      "dataZod1": {
+        "error": "Validation failed. Please verify request parameters.",
+        "details": [
+          {
+            "field": "name",
+            "message": "Product name must be at least 2 characters"
+          },
+          {
+            "field": "slug",
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ],
+        "code": "VALIDATION_ERROR"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:08.575Z"
+  },
+  {
+    "id": "zod_coupon_malformed",
+    "description": "Zod rejects coupon payload missing discount value",
+    "status": "pass",
+    "details": {
+      "status": 400,
+      "dataZod2": {
+        "error": "Validation failed. Please verify request parameters.",
+        "details": [
+          {
+            "field": "discount_percent",
+            "message": "Either discount_percent (1-100) or discount_amount must be provided."
+          }
+        ],
+        "code": "VALIDATION_ERROR"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:08.789Z"
+  },
+  {
+    "id": "gated_publish_creation",
+    "description": "Direct product creation with status=published must be rejected with 403",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "dataGated1": {
+        "error": "RESTRICTED: Products cannot be created directly in 'published' status. Production publication requires authorized Phase 2 launch verification.",
+        "code": "PRODUCTION_PUBLISH_GATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:08.985Z"
+  },
+  {
+    "id": "gated_publish_patch",
+    "description": "Direct PATCH updating draft status to published must be rejected with 403",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "dataGated2": {
+        "error": "RESTRICTED: Product publication is strictly locked in staging. Products must remain in 'draft' or 'archived' status pending Phase 2 commercial authorization.",
+        "code": "PRODUCTION_PUBLISH_GATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:09.171Z"
+  },
+  {
+    "id": "gated_price_activation",
+    "description": "Direct PATCH activating production pricing must be rejected with 403",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "dataGated3": {
+        "error": "RESTRICTED: Production price activation is locked. Price activation requires authorized pricing migration schedules.",
+        "code": "PRODUCTION_PRICING_GATED"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:09.367Z"
+  },
+  {
+    "id": "storage_object_existence_check",
+    "description": "Registering non-existent storage object must be rejected with 404 STORAGE_OBJECT_NOT_FOUND",
+    "status": "pass",
+    "details": {
+      "status": 404,
+      "dataStorage": {
+        "error": "Physical storage object not found. File 'products/ghost-folder/GhostFile.pdf' does not exist in private storage bucket 'digital-products'.",
+        "code": "STORAGE_OBJECT_NOT_FOUND"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:09.786Z"
+  },
+  {
+    "id": "invalid_product_relationship",
+    "description": "Registering asset with invalid product_id must be rejected with 400 PRODUCT_NOT_FOUND",
+    "status": "pass",
+    "details": {
+      "status": 400,
+      "dataRel": {
+        "error": "Referenced product does not exist.",
+        "code": "PRODUCT_NOT_FOUND"
+      }
+    },
+    "timestamp": "2026-11-21T11:23:10.080Z"
+  }
+]

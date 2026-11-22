@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F5F2EB;
+  --secondary-bg: #EAE5DA;
+  --surface: #FFFFFF;
+  --primary-text: #292B27;
+  --secondary-text: #77766E;
+  --sage-accent: #A5AC91;
+  --olive-accent: #657052;
+  --border-color: #DDD8CD;
+}
+
+@theme {
+  --color-brand-bg: #F5F2EB;
+  --color-brand-secondary: #EAE5DA;
+  --color-brand-surface: #FFFFFF;
+  --color-brand-text: #292B27;
+  --color-brand-muted: #77766E;
+  --color-brand-sage: #A5AC91;
+  --color-brand-olive: #657052;
+  --color-brand-border: #DDD8CD;
+
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-plus-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--primary-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom editorial styling */
+.font-display {
+  font-family: var(--font-serif);
+}
+
+.font-body {
+  font-family: var(--font-sans);
+}
+
+/* Custom scrollbar for clean minimal look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F2EB;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DDD8CD;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A5AC91;
+}
+
+/* Selection */
+::selection {
+  background: #A5AC91;
+  color: #FFFFFF;
+}

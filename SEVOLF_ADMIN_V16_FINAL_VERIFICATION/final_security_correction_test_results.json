@@ -1,0 +1,544 @@
+[
+  {
+    "id": "unauth_GET__api_admin_products",
+    "description": "Unauthenticated call to GET /api/admin/products must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:22.988Z"
+  },
+  {
+    "id": "unauth_POST__api_admin_products",
+    "description": "Unauthenticated call to POST /api/admin/products must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.017Z"
+  },
+  {
+    "id": "unauth_PATCH__api_admin_products_14_day_home_reset_kit",
+    "description": "Unauthenticated call to PATCH /api/admin/products/14-day-home-reset-kit must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.048Z"
+  },
+  {
+    "id": "unauth_DELETE__api_admin_products_test_productivity_playbook",
+    "description": "Unauthenticated call to DELETE /api/admin/products/test-productivity-playbook must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.067Z"
+  },
+  {
+    "id": "unauth_GET__api_admin_collections",
+    "description": "Unauthenticated call to GET /api/admin/collections must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.085Z"
+  },
+  {
+    "id": "unauth_POST__api_admin_collections",
+    "description": "Unauthenticated call to POST /api/admin/collections must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.107Z"
+  },
+  {
+    "id": "unauth_GET__api_admin_coupons",
+    "description": "Unauthenticated call to GET /api/admin/coupons must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.126Z"
+  },
+  {
+    "id": "unauth_POST__api_admin_coupons",
+    "description": "Unauthenticated call to POST /api/admin/coupons must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.138Z"
+  },
+  {
+    "id": "unauth_GET__api_admin_assets",
+    "description": "Unauthenticated call to GET /api/admin/assets must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.154Z"
+  },
+  {
+    "id": "unauth_POST__api_admin_assets",
+    "description": "Unauthenticated call to POST /api/admin/assets must return 401",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Authentication required. Please sign in to access administrative operations.",
+        "code": "UNAUTHENTICATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:23.172Z"
+  },
+  {
+    "id": "non_admin_forbidden",
+    "description": "Authenticated customer request to admin API must return 403 Forbidden",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "data": {
+        "error": "Access denied. Caller does not have administrative privileges.",
+        "code": "FORBIDDEN_INSUFFICIENT_ROLE"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:25.712Z"
+  },
+  {
+    "id": "missing_profile_rejected",
+    "description": "User with metadata role=admin but missing DB profile must be rejected with 403",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "data": {
+        "error": "Access denied. Caller profile does not exist in administrative directory.",
+        "code": "FORBIDDEN_MISSING_PROFILE"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:25.916Z"
+  },
+  {
+    "id": "conflicting_credentials_check",
+    "description": "Conflicting credentials evaluated safely",
+    "status": "pass",
+    "details": {
+      "status": 200,
+      "data": {
+        "products": [
+          {
+            "id": "3c8ebf78-8672-4a20-9207-b62adb129bb8",
+            "name": "Test Productivity Playbook",
+            "slug": "test-productivity-playbook",
+            "tagline": "",
+            "short_description": "Test Productivity Playbook - Digital Product",
+            "full_description": "Test Productivity Playbook - Complete digital edition.",
+            "category_id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+            "product_type": "Digital Workbook",
+            "format": "pdf",
+            "format_label": "PDF (Print-Ready)",
+            "cover_image_url": "/images/products/home-reset-kit/cover.jpg",
+            "licence_type": "personal",
+            "licence_description": "Single-household personal licence.",
+            "status": "draft",
+            "is_featured": false,
+            "is_new_arrival": false,
+            "is_bestseller": false,
+            "is_bundle": false,
+            "tags": [
+              "digital",
+              "draft"
+            ],
+            "seo_title": null,
+            "seo_description": null,
+            "educational_meta": null,
+            "specifications": null,
+            "key_benefits": [],
+            "created_at": "2026-11-21T06:51:58.76744+00:00",
+            "updated_at": "2026-11-21T06:51:58.76744+00:00",
+            "product_categories": {
+              "id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+              "name": "Home & Living",
+              "slug": "home-living"
+            },
+            "product_media": [],
+            "product_prices": []
+          },
+          {
+            "id": "4959d0a1-2512-4a96-9cb9-bb78b37fa0da",
+            "name": "Mitthu's Fun Learning Book",
+            "slug": "mitthus-fun-learning-book",
+            "tagline": "Early literacy, phonics, and curiosity activities for toddler discovery.",
+            "short_description": "An authentic 50-page printable A4 activity workbook designed for early learning (ages 2–3), combining foundational tracing with gentle bilingual cues.",
+            "full_description": "Crafted with gentle earth tones and purposeful illustrations, Mitthu's Fun Learning Book introduces young toddlers to foundational motor control and observation without sensory overload.\n\nSpanning 50 structured A4 pages, the book guides children through tactile line tracing, object association, and early vocabulary in a calm, screen-free format.",
+            "category_id": "1dfd4cb5-353d-440f-8334-493062e20be5",
+            "product_type": "Printable Activity Workbook",
+            "format": "pdf",
+            "format_label": "Printable A4 PDF Activity Book",
+            "cover_image_url": "/images/products/mitthus-fun-learning/cover.jpg",
+            "licence_type": "personal",
+            "licence_description": "Personal household licence. Unlimited personal prints for children in your home.",
+            "status": "draft",
+            "is_featured": true,
+            "is_new_arrival": false,
+            "is_bestseller": true,
+            "is_bundle": false,
+            "tags": [
+              "kids",
+              "learning",
+              "phonics",
+              "montessori",
+              "activity book",
+              "toddler"
+            ],
+            "seo_title": "Mitthu's Fun Learning Book | SEVOLF Little Education",
+            "seo_description": "Gentle 50-page early learning activity workbook for ages 2–3. Phonics, tracing, and nature counting without screen time.",
+            "educational_meta": {
+              "ageRange": "2 – 3 Years",
+              "language": "English with Hindi vocabulary cues",
+              "pagesIncluded": 50,
+              "learningObjectives": [
+                "Early pencil grip and pre-writing motor control",
+                "Basic shape and object recognition",
+                "Gentle bilingual vocabulary elements"
+              ],
+              "printingInstructions": "Standard A4 paper (80–100 gsm recommended)"
+            },
+            "specifications": {
+              "Format": "Standard A4 PDF (595 × 842 pt)",
+              "Version": "v1.0.0",
+              "File Size": "615.8 KB",
+              "Page Count": "50 Pages",
+              "Target Age": "2 to 3 Years"
+            },
+            "key_benefits": [
+              "Authentic 50-page tactile activity sequence.",
+              "Calibrated specifically for ages 2–3 early childhood development.",
+              "Zero sensory overload or screen fatigue."
+            ],
+            "created_at": "2026-11-18T11:11:18.541167+00:00",
+            "updated_at": "2026-11-18T11:11:17.585+00:00",
+            "product_categories": {
+              "id": "1dfd4cb5-353d-440f-8334-493062e20be5",
+              "name": "SEVOLF Little",
+              "slug": "kids-education"
+            },
+            "product_media": [
+              {
+                "id": "9199864a-963b-4eb1-a229-d4d8a043ef33",
+                "url": "/images/products/mitthus-fun-learning/cover.jpg",
+                "alt_text": "Mitthu's Fun Learning Book Cover",
+                "media_type": "cover",
+                "product_id": "4959d0a1-2512-4a96-9cb9-bb78b37fa0da",
+                "display_order": 1
+              },
+              {
+                "id": "7dd2c05f-4f78-47d2-87fe-0e00dadb6ca6",
+                "url": "/images/products/mitthus-fun-learning/sample-pages.jpg",
+                "alt_text": "Sample Phonics and Line Tracing Exercises",
+                "media_type": "gallery",
+                "product_id": "4959d0a1-2512-4a96-9cb9-bb78b37fa0da",
+                "display_order": 2
+              },
+              {
+                "id": "0d69ebaf-a6c0-4ae7-a0d6-4516b3518fe1",
+                "url": "/images/products/mitthus-fun-learning/flashcards.jpg",
+                "alt_text": "Printable Activity Cards",
+                "media_type": "gallery",
+                "product_id": "4959d0a1-2512-4a96-9cb9-bb78b37fa0da",
+                "display_order": 3
+              }
+            ],
+            "product_prices": []
+          },
+          {
+            "id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+            "name": "14-Day Home Reset Kit",
+            "slug": "14-day-home-reset-kit",
+            "tagline": "A restorative step-by-step system for reclaiming serenity in your home.",
+            "short_description": "An intentional 22-page editorial workbook and daily room-by-room audit system to declutter and refresh your living environment. Includes both A4 and US Letter editions.",
+            "full_description": "The 14-Day Home Reset Kit is designed for individuals seeking intentional order in their physical surroundings without the stress of overwhelming overhauls.\n\nStructured into fourteen distinct daily sequences, the guide walks you through entryway curation, kitchen functional zones, wardrobe moderation, and quiet evening retreats. Each day contains a concise intentionality essay, an actionable checklist, and storage layout diagrams.\n\nIncludes both international A4 and North American US Letter standard printable editions, calibrated with binder margins for physical printing or tablet annotation.",
+            "category_id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+            "product_type": "Comprehensive Guide & Workbook",
+            "format": "pdf",
+            "format_label": "PDF (Print-Ready)",
+            "cover_image_url": "/images/products/home-reset-kit/cover.jpg",
+            "licence_type": "personal",
+            "licence_description": "Single-household personal licence. For personal use only. Redistribution or commercial resale is strictly prohibited.",
+            "status": "draft",
+            "is_featured": true,
+            "is_new_arrival": false,
+            "is_bestseller": true,
+            "is_bundle": false,
+            "tags": [
+              "home",
+              "declutter",
+              "organisation",
+              "minimalism",
+              "lifestyle"
+            ],
+            "seo_title": "14-Day Home Reset Kit | SEVOLF Digital Home & Living",
+            "seo_description": "An intentional 22-page digital guide and workbook to declutter and organize your living spaces. Includes A4 & US Letter printable editions.",
+            "educational_meta": null,
+            "specifications": {
+              "Version": "v1.2.3 (Edition No. 04)",
+              "Page Count": "22 Pages per Edition",
+              "Total File Size": "12.24 MB combined",
+              "Editions Included": "A4 (210 × 297 mm) and US Letter (8.5 × 11 in)"
+            },
+            "key_benefits": [
+              "Manageable 30 to 60-minute daily micro-interventions.",
+              "Includes calibrated A4 and US Letter editions with 20mm binder margins.",
+              "Sustainable seasonal framework based on the 30-Day Pause Box method."
+            ],
+            "created_at": "2026-11-18T11:11:17.741263+00:00",
+            "updated_at": "2026-11-21T06:51:59.211+00:00",
+            "product_categories": {
+              "id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+              "name": "Home & Living",
+              "slug": "home-living"
+            },
+            "product_media": [
+              {
+                "id": "294f4964-c5b0-4d35-a720-476f89dac141",
+                "url": "/images/products/home-reset-kit/cover.jpg",
+                "alt_text": "14-Day Home Reset Kit Cover Artwork",
+                "media_type": "cover",
+                "product_id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+                "display_order": 1
+              },
+              {
+                "id": "da4a3299-dc91-4e6f-9445-df891e29e927",
+                "url": "/images/products/home-reset-kit/interior-1.jpg",
+                "alt_text": "Daily Room Reset Routine Layout",
+                "media_type": "gallery",
+                "product_id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+                "display_order": 2
+              },
+              {
+                "id": "63349c6a-e17e-4d4e-ae25-83c01fdee6b1",
+                "url": "/images/products/home-reset-kit/interior-2.jpg",
+                "alt_text": "Pantry and Storage Organization Matrix",
+                "media_type": "gallery",
+                "product_id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+                "display_order": 3
+              },
+              {
+                "id": "c96a0c46-e42b-4f78-a877-fbb20fd26dbd",
+                "url": "/images/products/home-reset-kit/spotlight-mockup.jpg",
+                "alt_text": "Tablet & Print Editions Mockup Display",
+                "media_type": "mockup",
+                "product_id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+                "display_order": 4
+              }
+            ],
+            "product_prices": []
+          }
+        ]
+      }
+    },
+    "timestamp": "2026-11-21T12:45:26.254Z"
+  },
+  {
+    "id": "admin_get_products",
+    "description": "Authorized admin GET /api/admin/products returns 200",
+    "status": "pass",
+    "details": {
+      "status": 200,
+      "count": 3
+    },
+    "timestamp": "2026-11-21T12:45:26.536Z"
+  },
+  {
+    "id": "zod_product_malformed",
+    "description": "Zod rejects product payload missing slug and valid title",
+    "status": "pass",
+    "details": {
+      "status": 400,
+      "dataZod1": {
+        "error": "Validation failed. Please verify request parameters.",
+        "details": [
+          {
+            "field": "name",
+            "message": "Product name must be at least 2 characters"
+          },
+          {
+            "field": "slug",
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ],
+        "code": "VALIDATION_ERROR"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:26.761Z"
+  },
+  {
+    "id": "zod_coupon_malformed",
+    "description": "Zod rejects coupon payload missing discount value",
+    "status": "pass",
+    "details": {
+      "status": 400,
+      "dataZod2": {
+        "error": "Validation failed. Please verify request parameters.",
+        "details": [
+          {
+            "field": "discount_percent",
+            "message": "Either discount_percent (1-100) or discount_amount must be provided."
+          }
+        ],
+        "code": "VALIDATION_ERROR"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:27.002Z"
+  },
+  {
+    "id": "gated_publish_creation",
+    "description": "Direct product creation with status=published must be rejected with 403",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "dataGated1": {
+        "error": "RESTRICTED: Products cannot be created directly in 'published' status. Production publication requires authorized Phase 2 launch verification.",
+        "code": "PRODUCTION_PUBLISH_GATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:27.204Z"
+  },
+  {
+    "id": "gated_publish_patch",
+    "description": "Direct PATCH updating draft status to published must be rejected with 403",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "dataGated2": {
+        "error": "RESTRICTED: Product publication is strictly locked in staging. Products must remain in 'draft' or 'archived' status pending Phase 2 commercial authorization.",
+        "code": "PRODUCTION_PUBLISH_GATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:27.375Z"
+  },
+  {
+    "id": "gated_price_activation",
+    "description": "Direct PATCH activating production pricing must be rejected with 403",
+    "status": "pass",
+    "details": {
+      "status": 403,
+      "dataGated3": {
+        "error": "RESTRICTED: Production price activation is locked. Price activation requires authorized pricing migration schedules.",
+        "code": "PRODUCTION_PRICING_GATED"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:27.561Z"
+  },
+  {
+    "id": "storage_object_existence_check",
+    "description": "Registering non-existent storage object must be rejected with 404 STORAGE_OBJECT_NOT_FOUND",
+    "status": "pass",
+    "details": {
+      "status": 404,
+      "dataStorage": {
+        "error": "Physical storage object not found. File 'products/ghost-folder/nested/GhostFile.pdf' does not exist in private storage bucket 'digital-products'.",
+        "code": "STORAGE_OBJECT_NOT_FOUND"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:28.056Z"
+  },
+  {
+    "id": "invalid_product_relationship",
+    "description": "Registering asset with invalid product_id must be rejected with 400 PRODUCT_NOT_FOUND",
+    "status": "pass",
+    "details": {
+      "status": 400,
+      "dataRel": {
+        "error": "Referenced product does not exist.",
+        "code": "PRODUCT_NOT_FOUND"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:28.368Z"
+  },
+  {
+    "id": "concurrent_duplicate_product",
+    "description": "Concurrent creation of duplicate product slug handles race safely (one 201, one 409)",
+    "status": "pass",
+    "details": {
+      "status1": 201,
+      "status2": 409,
+      "data1": {
+        "success": true,
+        "product": {
+          "id": "844f2fcb-c5e9-4d63-9f17-8a6a2bf3f4cf",
+          "name": "Concurrent Test Product",
+          "slug": "concurrent-test-1795265128368",
+          "tagline": "",
+          "short_description": "Concurrent Test Product - Digital Product",
+          "full_description": "Concurrent Test Product - Complete digital edition.",
+          "category_id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+          "product_type": "Digital Workbook",
+          "format": "pdf",
+          "format_label": "PDF (Print-Ready)",
+          "cover_image_url": "/images/products/home-reset-kit/cover.jpg",
+          "licence_type": "personal",
+          "licence_description": "Single-household personal licence.",
+          "status": "draft",
+          "is_featured": false,
+          "is_new_arrival": false,
+          "is_bestseller": false,
+          "is_bundle": false,
+          "tags": [
+            "digital",
+            "draft"
+          ],
+          "seo_title": null,
+          "seo_description": null,
+          "educational_meta": null,
+          "specifications": null,
+          "key_benefits": [],
+          "created_at": "2026-11-21T12:45:30.235677+00:00",
+          "updated_at": "2026-11-21T12:45:30.235677+00:00"
+        }
+      },
+      "data2": {
+        "error": "A record with this identifier or unique value already exists.",
+        "code": "RECORD_CONFLICT"
+      }
+    },
+    "timestamp": "2026-11-21T12:45:28.912Z"
+  }
+]

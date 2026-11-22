@@ -1,0 +1,703 @@
+[
+  {
+    "id": "coupon_concurrency_race",
+    "description": "Simultaneous creation of identical coupon code produces exactly one 201 and one 409",
+    "status": "pass",
+    "details": {
+      "cStatus1": 409,
+      "cStatus2": 201,
+      "cData1": {
+        "error": "A record with this identifier or unique value already exists.",
+        "code": "RECORD_CONFLICT"
+      },
+      "cData2": {
+        "success": true,
+        "coupon": {
+          "id": "1885a4d2-b2d4-49a9-9db4-46e4f5f38bf0",
+          "code": "CONCUR1971",
+          "discount_percent": 15,
+          "discount_amount": null,
+          "valid_until": null,
+          "max_uses": 50,
+          "times_used": 0,
+          "is_active": true,
+          "created_at": "2026-11-21T14:01:43.808341+00:00"
+        }
+      },
+      "dbRowCount": 1
+    },
+    "timestamp": "2026-11-21T14:01:42.470Z"
+  },
+  {
+    "id": "credential_valid_cookie_valid_bearer_same_user",
+    "description": "Valid cookie + valid Bearer token for same user succeeds with 200 OK",
+    "status": "pass",
+    "details": {
+      "status": 200
+    },
+    "timestamp": "2026-11-21T14:01:43.179Z"
+  },
+  {
+    "id": "credential_valid_cookie_valid_bearer_different_users",
+    "description": "Valid cookie + valid Bearer token for different users rejected with 400 AMBIGUOUS_CREDENTIALS",
+    "status": "pass",
+    "details": {
+      "status": 400,
+      "data": {
+        "error": "Conflicting credentials provided. Ambiguous identity detected between session cookie and authorization header.",
+        "code": "AMBIGUOUS_CREDENTIALS"
+      }
+    },
+    "timestamp": "2026-11-21T14:01:43.505Z"
+  },
+  {
+    "id": "credential_valid_cookie_invalid_bearer",
+    "description": "Valid cookie + invalid Bearer token rejected with 401 INVALID_BEARER_TOKEN (fails closed on corrupted bearer)",
+    "status": "pass",
+    "details": {
+      "status": 401,
+      "data": {
+        "error": "Invalid or expired authorization token.",
+        "code": "INVALID_BEARER_TOKEN"
+      }
+    },
+    "timestamp": "2026-11-21T14:01:43.800Z"
+  },
+  {
+    "id": "credential_invalid_cookie_valid_bearer",
+    "description": "Invalid cookie + valid Bearer token processes valid Bearer and succeeds with 200 OK",
+    "status": "pass",
+    "details": {
+      "status": 200,
+      "data": {
+        "products": [
+          {
+            "id": "80c1b0d0-d7bb-4ec6-b062-03b8ffaf274e",
+            "name": "Probe",
+            "slug": "probe",
+            "tagline": "",
+            "short_description": "Probe - Digital Product",
+            "full_description": "Probe - Complete digital edition.",
+            "category_id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+            "product_type": "Digital Workbook",
+            "format": "pdf",
+            "format_label": "PDF (Print-Ready)",
+            "cover_image_url": "/images/products/home-reset-kit/cover.jpg",
+            "licence_type": "personal",
+            "licence_description": "Single-household personal licence.",
+            "status": "draft",
+            "is_featured": false,
+            "is_new_arrival": false,
+            "is_bestseller": false,
+            "is_bundle": false,
+            "tags": [
+              "digital",
+              "draft"
+            ],
+            "seo_title": null,
+            "seo_description": null,
+            "educational_meta": null,
+            "specifications": null,
+            "key_benefits": [],
+            "created_at": "2026-11-21T13:29:50.264763+00:00",
+            "updated_at": "2026-11-21T13:29:50.264763+00:00",
+            "product_categories": {
+              "id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+              "name": "Home & Living",
+              "slug": "home-living"
+            },
+            "product_media": [],
+            "product_prices": []
+          },
+          {
+            "id": "3c8ebf78-8672-4a20-9207-b62adb129bb8",
+            "name": "Test Productivity Playbook",
+            "slug": "test-productivity-playbook",
+            "tagline": "",
+            "short_description": "Test Productivity Playbook - Digital Product",
+            "full_description": "Test Productivity Playbook - Complete digital edition.",
+            "category_id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+            "product_type": "Digital Workbook",
+            "format": "pdf",
+            "format_label": "PDF (Print-Ready)",
+            "cover_image_url": "/images/products/home-reset-kit/cover.jpg",
+            "licence_type": "personal",
+            "licence_description": "Single-household personal licence.",
+            "status": "draft",
+            "is_featured": false,
+            "is_new_arrival": false,
+            "is_bestseller": false,
+            "is_bundle": false,
+            "tags": [
+              "digital",
+              "draft"
+            ],
+            "seo_title": null,
+            "seo_description": null,
+            "educational_meta": null,
+            "specifications": null,
+            "key_benefits": [],
+            "created_at": "2026-11-21T06:51:58.76744+00:00",
+            "updated_at": "2026-11-21T06:51:58.76744+00:00",
+            "product_categories": {
+              "id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+              "name": "Home & Living",
+              "slug": "home-living"
+            },
+            "product_media": [],
+            "product_prices": []
+          },
+          {
+            "id": "4959d0a1-2512-4a96-9cb9-bb78b37fa0da",
+            "name": "Mitthu's Fun Learning Book",
+            "slug": "mitthus-fun-learning-book",
+            "tagline": "Early literacy, phonics, and curiosity activities for toddler discovery.",
+            "short_description": "An authentic 50-page printable A4 activity workbook designed for early learning (ages 2–3), combining foundational tracing with gentle bilingual cues.",
+            "full_description": "Crafted with gentle earth tones and purposeful illustrations, Mitthu's Fun Learning Book introduces young toddlers to foundational motor control and observation without sensory overload.\n\nSpanning 50 structured A4 pages, the book guides children through tactile line tracing, object association, and early vocabulary in a calm, screen-free format.",
+            "category_id": "1dfd4cb5-353d-440f-8334-493062e20be5",
+            "product_type": "Printable Activity Workbook",
+            "format": "pdf",
+            "format_label": "Printable A4 PDF Activity Book",
+            "cover_image_url": "/images/products/mitthus-fun-learning/cover.jpg",
+            "licence_type": "personal",
+            "licence_description": "Personal household licence. Unlimited personal prints for children in your home.",
+            "status": "draft",
+            "is_featured": true,
+            "is_new_arrival": false,
+            "is_bestseller": true,
+            "is_bundle": false,
+            "tags": [
+              "kids",
+              "learning",
+              "phonics",
+              "montessori",
+              "activity book",
+              "toddler"
+            ],
+            "seo_title": "Mitthu's Fun Learning Book | SEVOLF Little Education",
+            "seo_description": "Gentle 50-page early learning activity workbook for ages 2–3. Phonics, tracing, and nature counting without screen time.",
+            "educational_meta": {
+              "ageRange": "2 – 3 Years",
+              "language": "English with Hindi vocabulary cues",
+              "pagesIncluded": 50,
+              "learningObjectives": [
+                "Early pencil grip and pre-writing motor control",
+                "Basic shape and object recognition",
+                "Gentle bilingual vocabulary elements"
+              ],
+              "printingInstructions": "Standard A4 paper (80–100 gsm recommended)"
+            },
+            "specifications": {
+              "Format": "Standard A4 PDF (595 × 842 pt)",
+              "Version": "v1.0.0",
+              "File Size": "615.8 KB",
+              "Page Count": "50 Pages",
+              "Target Age": "2 to 3 Years"
+            },
+            "key_benefits": [
+              "Authentic 50-page tactile activity sequence.",
+              "Calibrated specifically for ages 2–3 early childhood development.",
+              "Zero sensory overload or screen fatigue."
+            ],
+            "created_at": "2026-11-18T11:11:18.541167+00:00",
+            "updated_at": "2026-11-18T11:11:17.585+00:00",
+            "product_categories": {
+              "id": "1dfd4cb5-353d-440f-8334-493062e20be5",
+              "name": "SEVOLF Little",
+              "slug": "kids-education"
+            },
+            "product_media": [
+              {
+                "id": "9199864a-963b-4eb1-a229-d4d8a043ef33",
+                "url": "/images/products/mitthus-fun-learning/cover.jpg",
+                "alt_text": "Mitthu's Fun Learning Book Cover",
+                "media_type": "cover",
+                "product_id": "4959d0a1-2512-4a96-9cb9-bb78b37fa0da",
+                "display_order": 1
+              },
+              {
+                "id": "7dd2c05f-4f78-47d2-87fe-0e00dadb6ca6",
+                "url": "/images/products/mitthus-fun-learning/sample-pages.jpg",
+                "alt_text": "Sample Phonics and Line Tracing Exercises",
+                "media_type": "gallery",
+                "product_id": "4959d0a1-2512-4a96-9cb9-bb78b37fa0da",
+                "display_order": 2
+              },
+              {
+                "id": "0d69ebaf-a6c0-4ae7-a0d6-4516b3518fe1",
+                "url": "/images/products/mitthus-fun-learning/flashcards.jpg",
+                "alt_text": "Printable Activity Cards",
+                "media_type": "gallery",
+                "product_id": "4959d0a1-2512-4a96-9cb9-bb78b37fa0da",
+                "display_order": 3
+              }
+            ],
+            "product_prices": []
+          },
+          {
+            "id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+            "name": "14-Day Home Reset Kit",
+            "slug": "14-day-home-reset-kit",
+            "tagline": "Probe",
+            "short_description": "An intentional 22-page editorial workbook and daily room-by-room audit system to declutter and refresh your living environment. Includes both A4 and US Letter editions.",
+            "full_description": "The 14-Day Home Reset Kit is designed for individuals seeking intentional order in their physical surroundings without the stress of overwhelming overhauls.\n\nStructured into fourteen distinct daily sequences, the guide walks you through entryway curation, kitchen functional zones, wardrobe moderation, and quiet evening retreats. Each day contains a concise intentionality essay, an actionable checklist, and storage layout diagrams.\n\nIncludes both international A4 and North American US Letter standard printable editions, calibrated with binder margins for physical printing or tablet annotation.",
+            "category_id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+            "product_type": "Comprehensive Guide & Workbook",
+            "format": "pdf",
+            "format_label": "PDF (Print-Ready)",
+            "cover_image_url": "/images/products/home-reset-kit/cover.jpg",
+            "licence_type": "personal",
+            "licence_description": "Single-household personal licence. For personal use only. Redistribution or commercial resale is strictly prohibited.",
+            "status": "draft",
+            "is_featured": true,
+            "is_new_arrival": false,
+            "is_bestseller": true,
+            "is_bundle": false,
+            "tags": [
+              "home",
+              "declutter",
+              "organisation",
+              "minimalism",
+              "lifestyle"
+            ],
+            "seo_title": "14-Day Home Reset Kit | SEVOLF Digital Home & Living",
+            "seo_description": "An intentional 22-page digital guide and workbook to declutter and organize your living spaces. Includes A4 & US Letter printable editions.",
+            "educational_meta": null,
+            "specifications": {
+              "Version": "v1.2.3 (Edition No. 04)",
+              "Page Count": "22 Pages per Edition",
+              "Total File Size": "12.24 MB combined",
+              "Editions Included": "A4 (210 × 297 mm) and US Letter (8.5 × 11 in)"
+            },
+            "key_benefits": [
+              "Manageable 30 to 60-minute daily micro-interventions.",
+              "Includes calibrated A4 and US Letter editions with 20mm binder margins.",
+              "Sustainable seasonal framework based on the 30-Day Pause Box method."
+            ],
+            "created_at": "2026-11-18T11:11:17.741263+00:00",
+            "updated_at": "2026-11-21T13:31:52.354+00:00",
+            "product_categories": {
+              "id": "41ff3e28-6ffa-47f4-bf13-c4c418e007d1",
+              "name": "Home & Living",
+              "slug": "home-living"
+            },
+            "product_media": [
+              {
+                "id": "294f4964-c5b0-4d35-a720-476f89dac141",
+                "url": "/images/products/home-reset-kit/cover.jpg",
+                "alt_text": "14-Day Home Reset Kit Cover Artwork",
+                "media_type": "cover",
+                "product_id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+                "display_order": 1
+              },
+              {
+                "id": "da4a3299-dc91-4e6f-9445-df891e29e927",
+                "url": "/images/products/home-reset-kit/interior-1.jpg",
+                "alt_text": "Daily Room Reset Routine Layout",
+                "media_type": "gallery",
+                "product_id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+                "display_order": 2
+              },
+              {
+                "id": "63349c6a-e17e-4d4e-ae25-83c01fdee6b1",
+                "url": "/images/products/home-reset-kit/interior-2.jpg",
+                "alt_text": "Pantry and Storage Organization Matrix",
+                "media_type": "gallery",
+                "product_id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+                "display_order": 3
+              },
+              {
+                "id": "c96a0c46-e42b-4f78-a877-fbb20fd26dbd",
+                "url": "/images/products/home-reset-kit/spotlight-mockup.jpg",
+                "alt_text": "Tablet & Print Editions Mockup Display",
+                "media_type": "mockup",
+                "product_id": "284fc059-3be0-44a2-969f-899ea23ead2a",
+                "display_order": 4
+              }
+            ],
+            "product_prices": []
+          }
+        ]
+      }
+    },
+    "timestamp": "2026-11-21T14:01:44.098Z"
+  },
+  {
+    "id": "coverage_unauth_m01",
+    "description": "GET /api/admin/products unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:44.125Z"
+  },
+  {
+    "id": "coverage_cust_m01",
+    "description": "GET /api/admin/products customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:44.331Z"
+  },
+  {
+    "id": "coverage_admin_m01",
+    "description": "GET /api/admin/products admin -> authorized (200)",
+    "status": "pass",
+    "details": {
+      "status": 200
+    },
+    "timestamp": "2026-11-21T14:01:44.666Z"
+  },
+  {
+    "id": "coverage_unauth_m02",
+    "description": "POST /api/admin/products unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:44.683Z"
+  },
+  {
+    "id": "coverage_cust_m02",
+    "description": "POST /api/admin/products customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:44.898Z"
+  },
+  {
+    "id": "coverage_admin_m02",
+    "description": "POST /api/admin/products admin -> authorized (409)",
+    "status": "pass",
+    "details": {
+      "status": 409
+    },
+    "timestamp": "2026-11-21T14:01:45.277Z"
+  },
+  {
+    "id": "coverage_unauth_m03",
+    "description": "GET /api/admin/products/[slug] unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:45.298Z"
+  },
+  {
+    "id": "coverage_cust_m03",
+    "description": "GET /api/admin/products/[slug] customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:45.497Z"
+  },
+  {
+    "id": "coverage_admin_m03",
+    "description": "GET /api/admin/products/[slug] admin -> authorized (200)",
+    "status": "pass",
+    "details": {
+      "status": 200
+    },
+    "timestamp": "2026-11-21T14:01:45.763Z"
+  },
+  {
+    "id": "coverage_unauth_m04",
+    "description": "PATCH /api/admin/products/[slug] unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:45.779Z"
+  },
+  {
+    "id": "coverage_cust_m04",
+    "description": "PATCH /api/admin/products/[slug] customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:45.976Z"
+  },
+  {
+    "id": "coverage_admin_m04",
+    "description": "PATCH /api/admin/products/[slug] admin -> authorized (200)",
+    "status": "pass",
+    "details": {
+      "status": 200
+    },
+    "timestamp": "2026-11-21T14:01:46.252Z"
+  },
+  {
+    "id": "coverage_unauth_m05",
+    "description": "DELETE /api/admin/products/[slug] unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:46.269Z"
+  },
+  {
+    "id": "coverage_cust_m05",
+    "description": "DELETE /api/admin/products/[slug] customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:46.487Z"
+  },
+  {
+    "id": "coverage_admin_m05",
+    "description": "DELETE /api/admin/products/[slug] admin -> authorized (404)",
+    "status": "pass",
+    "details": {
+      "status": 404
+    },
+    "timestamp": "2026-11-21T14:01:46.778Z"
+  },
+  {
+    "id": "coverage_unauth_m06",
+    "description": "GET /api/admin/collections unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:46.802Z"
+  },
+  {
+    "id": "coverage_cust_m06",
+    "description": "GET /api/admin/collections customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:46.989Z"
+  },
+  {
+    "id": "coverage_admin_m06",
+    "description": "GET /api/admin/collections admin -> authorized (200)",
+    "status": "pass",
+    "details": {
+      "status": 200
+    },
+    "timestamp": "2026-11-21T14:01:47.270Z"
+  },
+  {
+    "id": "coverage_unauth_m07",
+    "description": "POST /api/admin/collections unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:47.289Z"
+  },
+  {
+    "id": "coverage_cust_m07",
+    "description": "POST /api/admin/collections customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:47.496Z"
+  },
+  {
+    "id": "coverage_admin_m07",
+    "description": "POST /api/admin/collections admin -> authorized (409)",
+    "status": "pass",
+    "details": {
+      "status": 409
+    },
+    "timestamp": "2026-11-21T14:01:47.807Z"
+  },
+  {
+    "id": "coverage_unauth_m08",
+    "description": "PATCH /api/admin/collections unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:47.824Z"
+  },
+  {
+    "id": "coverage_cust_m08",
+    "description": "PATCH /api/admin/collections customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:48.014Z"
+  },
+  {
+    "id": "coverage_admin_m08",
+    "description": "PATCH /api/admin/collections admin -> authorized (400)",
+    "status": "pass",
+    "details": {
+      "status": 400
+    },
+    "timestamp": "2026-11-21T14:01:48.213Z"
+  },
+  {
+    "id": "coverage_unauth_m09",
+    "description": "GET /api/admin/coupons unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:48.219Z"
+  },
+  {
+    "id": "coverage_cust_m09",
+    "description": "GET /api/admin/coupons customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:48.405Z"
+  },
+  {
+    "id": "coverage_admin_m09",
+    "description": "GET /api/admin/coupons admin -> authorized (200)",
+    "status": "pass",
+    "details": {
+      "status": 200
+    },
+    "timestamp": "2026-11-21T14:01:48.665Z"
+  },
+  {
+    "id": "coverage_unauth_m10",
+    "description": "POST /api/admin/coupons unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:48.677Z"
+  },
+  {
+    "id": "coverage_cust_m10",
+    "description": "POST /api/admin/coupons customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:48.898Z"
+  },
+  {
+    "id": "coverage_admin_m10",
+    "description": "POST /api/admin/coupons admin -> authorized (201)",
+    "status": "pass",
+    "details": {
+      "status": 201
+    },
+    "timestamp": "2026-11-21T14:01:49.176Z"
+  },
+  {
+    "id": "coverage_unauth_m11",
+    "description": "PATCH /api/admin/coupons unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:49.184Z"
+  },
+  {
+    "id": "coverage_cust_m11",
+    "description": "PATCH /api/admin/coupons customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:49.386Z"
+  },
+  {
+    "id": "coverage_admin_m11",
+    "description": "PATCH /api/admin/coupons admin -> authorized (400)",
+    "status": "pass",
+    "details": {
+      "status": 400
+    },
+    "timestamp": "2026-11-21T14:01:49.574Z"
+  },
+  {
+    "id": "coverage_unauth_m12",
+    "description": "GET /api/admin/assets unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:49.603Z"
+  },
+  {
+    "id": "coverage_cust_m12",
+    "description": "GET /api/admin/assets customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:49.793Z"
+  },
+  {
+    "id": "coverage_admin_m12",
+    "description": "GET /api/admin/assets admin -> authorized (200)",
+    "status": "pass",
+    "details": {
+      "status": 200
+    },
+    "timestamp": "2026-11-21T14:01:50.065Z"
+  },
+  {
+    "id": "coverage_unauth_m13",
+    "description": "POST /api/admin/assets unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:50.099Z"
+  },
+  {
+    "id": "coverage_cust_m13",
+    "description": "POST /api/admin/assets customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:50.289Z"
+  },
+  {
+    "id": "coverage_admin_m13",
+    "description": "POST /api/admin/assets admin -> authorized (404)",
+    "status": "pass",
+    "details": {
+      "status": 404
+    },
+    "timestamp": "2026-11-21T14:01:50.823Z"
+  },
+  {
+    "id": "coverage_unauth_m14",
+    "description": "PATCH /api/admin/assets unauthenticated -> 401",
+    "status": "pass",
+    "details": {
+      "status": 401
+    },
+    "timestamp": "2026-11-21T14:01:50.834Z"
+  },
+  {
+    "id": "coverage_cust_m14",
+    "description": "PATCH /api/admin/assets customer -> 403",
+    "status": "pass",
+    "details": {
+      "status": 403
+    },
+    "timestamp": "2026-11-21T14:01:51.014Z"
+  },
+  {
+    "id": "coverage_admin_m14",
+    "description": "PATCH /api/admin/assets admin -> authorized (400)",
+    "status": "pass",
+    "details": {
+      "status": 400
+    },
+    "timestamp": "2026-11-21T14:01:51.212Z"
+  }
+]

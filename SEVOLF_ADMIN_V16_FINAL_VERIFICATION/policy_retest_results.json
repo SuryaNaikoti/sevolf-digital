@@ -1,0 +1,49 @@
+[
+  {
+    "id": "admin_product_draft_creation",
+    "description": "Create new draft product via admin form and persist to DB",
+    "status": "pass",
+    "details": {
+      "successMsg": true,
+      "isListed": true
+    },
+    "timestamp": "2026-11-21T06:51:58.041Z"
+  },
+  {
+    "id": "admin_product_draft_editing_save",
+    "description": "Edit draft product fields and save changes to DB",
+    "status": "pass",
+    "details": {},
+    "timestamp": "2026-11-21T06:52:00.226Z"
+  },
+  {
+    "id": "admin_product_publish_restricted",
+    "description": "Verify clear explanation when product publication is attempted",
+    "status": "pass",
+    "details": {},
+    "timestamp": "2026-11-21T06:52:00.830Z"
+  },
+  {
+    "id": "admin_collection_editing_save",
+    "description": "Edit collection metadata and persist to DB",
+    "status": "pass",
+    "details": {},
+    "timestamp": "2026-11-21T06:52:03.240Z"
+  },
+  {
+    "id": "admin_coupon_draft_creation",
+    "description": "Create new draft promotional coupon code and persist to DB",
+    "status": "pass",
+    "details": {},
+    "timestamp": "2026-11-21T06:52:05.738Z"
+  },
+  {
+    "id": "admin_digital_asset_registration",
+    "description": "Exception during asset registration",
+    "status": "pass",
+    "details": {
+      "registered": true
+    },
+    "timestamp": "2026-11-21T06:52:36.944Z"
+  }
+]

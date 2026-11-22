@@ -1,0 +1,16 @@
+{
+  "name": "SEVOLF Digital",
+  "short_name": "SEVOLF",
+  "description": "Thoughtfully made digital products, planners, and resources for everyday living.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F2EB",
+  "theme_color": "#292B27",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

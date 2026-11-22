@@ -1,0 +1,307 @@
+[
+  {
+    "type": "page",
+    "route": "/about",
+    "file": "src\\app\\about\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/account/library",
+    "file": "src\\app\\account\\library\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/account/orders",
+    "file": "src\\app\\account\\orders\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/account",
+    "file": "src\\app\\account\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/account/profile",
+    "file": "src\\app\\account\\profile\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/account/subscriptions",
+    "file": "src\\app\\account\\subscriptions\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/account/wishlist",
+    "file": "src\\app\\account\\wishlist\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/analytics",
+    "file": "src\\app\\admin\\analytics\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/assets",
+    "file": "src\\app\\admin\\assets\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/bundles",
+    "file": "src\\app\\admin\\bundles\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/campaigns",
+    "file": "src\\app\\admin\\campaigns\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/collections",
+    "file": "src\\app\\admin\\collections\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/content",
+    "file": "src\\app\\admin\\content\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/customers",
+    "file": "src\\app\\admin\\customers\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/discounts",
+    "file": "src\\app\\admin\\discounts\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/draft-orders",
+    "file": "src\\app\\admin\\draft-orders\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/inventory",
+    "file": "src\\app\\admin\\inventory\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/orders",
+    "file": "src\\app\\admin\\orders\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin",
+    "file": "src\\app\\admin\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/payments",
+    "file": "src\\app\\admin\\payments\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/products",
+    "file": "src\\app\\admin\\products\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/products/[slug]",
+    "file": "src\\app\\admin\\products\\[slug]\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/readiness",
+    "file": "src\\app\\admin\\readiness\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/refunds",
+    "file": "src\\app\\admin\\refunds\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/reviews",
+    "file": "src\\app\\admin\\reviews\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/settings",
+    "file": "src\\app\\admin\\settings\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/admin/subscriptions",
+    "file": "src\\app\\admin\\subscriptions\\page.tsx"
+  },
+  {
+    "type": "api",
+    "route": "/api/admin/assets",
+    "file": "src\\app\\api\\admin\\assets\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/admin/collections",
+    "file": "src\\app\\api\\admin\\collections\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/admin/coupons",
+    "file": "src\\app\\api\\admin\\coupons\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/admin/products",
+    "file": "src\\app\\api\\admin\\products\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/admin/products/[slug]",
+    "file": "src\\app\\api\\admin\\products\\[slug]\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/auth/login",
+    "file": "src\\app\\api\\auth\\login\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/auth/logout",
+    "file": "src\\app\\api\\auth\\logout\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/auth/register",
+    "file": "src\\app\\api\\auth\\register\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/auth/reset-password",
+    "file": "src\\app\\api\\auth\\reset-password\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/checkout",
+    "file": "src\\app\\api\\checkout\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/download/[token]",
+    "file": "src\\app\\api\\download\\[token]\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/newsletter",
+    "file": "src\\app\\api\\newsletter\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/webhooks/razorpay",
+    "file": "src\\app\\api\\webhooks\\razorpay\\route.ts"
+  },
+  {
+    "type": "api",
+    "route": "/api/workers/delivery",
+    "file": "src\\app\\api\\workers\\delivery\\route.ts"
+  },
+  {
+    "type": "page",
+    "route": "/bestsellers",
+    "file": "src\\app\\bestsellers\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/bundles",
+    "file": "src\\app\\bundles\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/cart",
+    "file": "src\\app\\cart\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/checkout",
+    "file": "src\\app\\checkout\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/collections",
+    "file": "src\\app\\collections\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/collections/[slug]",
+    "file": "src\\app\\collections\\[slug]\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/contact",
+    "file": "src\\app\\contact\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/faq",
+    "file": "src\\app\\faq\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/journal",
+    "file": "src\\app\\journal\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/licensing",
+    "file": "src\\app\\licensing\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/login",
+    "file": "src\\app\\login\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/new-arrivals",
+    "file": "src\\app\\new-arrivals\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/order/success",
+    "file": "src\\app\\order\\success\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/",
+    "file": "src\\app\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/privacy",
+    "file": "src\\app\\privacy\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/products/[slug]",
+    "file": "src\\app\\products\\[slug]\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/refund-policy",
+    "file": "src\\app\\refund-policy\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/register",
+    "file": "src\\app\\register\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/shop",
+    "file": "src\\app\\shop\\page.tsx"
+  },
+  {
+    "type": "page",
+    "route": "/terms",
+    "file": "src\\app\\terms\\page.tsx"
+  }
+]

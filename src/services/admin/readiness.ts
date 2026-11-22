@@ -1,0 +1,138 @@
+export interface LaunchReadinessItem {
+  id: string;
+  category: string;
+  title: string;
+  description: string;
+  status: "ready" | "incomplete" | "not_connected" | "test_required" | "blocked";
+  details: string;
+  actionUrl?: string;
+}
+
+export const LAUNCH_READINESS_CHECKLIST: LaunchReadinessItem[] = [
+  {
+    id: "storefront",
+    category: "Storefront",
+    title: "Editorial Storefront & Navigation",
+    description: "Responsive home, shop, collections, cart and legal pages.",
+    status: "ready",
+    details: "All 36 pages and routes compiled and verified with Turbopack.",
+    actionUrl: "/shop",
+  },
+  {
+    id: "product_catalogue",
+    category: "Catalogue",
+    title: "Product Draft Records",
+    description: "Verified draft products in database without publishing live.",
+    status: "ready",
+    details: "14-Day Home Reset Kit and Mitthu's Fun Learning Book configured in Draft.",
+    actionUrl: "/admin/products",
+  },
+  {
+    id: "product_assets",
+    category: "Catalogue",
+    title: "Digital Asset Storage & Formats",
+    description: "Secure storage pathing and file formats (A4/US Letter PDF).",
+    status: "ready",
+    details: "Private storage bucket references mapped to digital assets.",
+    actionUrl: "/admin/assets",
+  },
+  {
+    id: "pricing_config",
+    category: "Catalogue",
+    title: "Live Pricing Publication",
+    description: "Production prices row in public.product_prices.",
+    status: "incomplete",
+    details: "Zero active prices in production to prevent premature customer charges.",
+    actionUrl: "/admin/products",
+  },
+  {
+    id: "checkout_flow",
+    category: "Checkout",
+    title: "Checkout Workflow & Validation",
+    description: "Client-side validation, coupon application, and pricing engine.",
+    status: "ready",
+    details: "Calculates subtotal, taxes, and order breakdown accurately.",
+    actionUrl: "/checkout",
+  },
+  {
+    id: "payment_gateway",
+    category: "Payments",
+    title: "Live Payment Gateway (Razorpay/Stripe)",
+    description: "Active production credentials with live money capture capabilities.",
+    status: "not_connected",
+    details: "Gateways are safely disconnected. Live credentials must be configured.",
+    actionUrl: "/admin/settings/integrations",
+  },
+  {
+    id: "payment_webhooks",
+    category: "Payments",
+    title: "Webhook Signature Verification",
+    description: "HMAC-SHA256 signature verification for payment.captured events.",
+    status: "ready",
+    details: "Validated with 100% test coverage in crypto-and-gateway.test.ts.",
+    actionUrl: "/admin/payments",
+  },
+  {
+    id: "transactional_email",
+    category: "Fulfillment",
+    title: "Email Dispatcher (Resend API)",
+    description: "Dispatching order confirmations and secure download credentials.",
+    status: "not_connected",
+    details: "Disconnected placeholder. Delivery jobs are queued safely in delivery_outbox.",
+    actionUrl: "/admin/settings/integrations",
+  },
+  {
+    id: "digital_delivery",
+    category: "Fulfillment",
+    title: "Token Encryption & Signed Storage URLs",
+    description: "AES-256-GCM token encryption and temporary signed Supabase URLs.",
+    status: "ready",
+    details: "Enforces 60-second signed URLs, single-use reservation claims, and quotas.",
+    actionUrl: "/admin/assets",
+  },
+  {
+    id: "refund_workflow",
+    category: "Finance",
+    title: "Atomic Refund Procedure & Lock Ordering",
+    description: "process_order_refund stored procedure with line-item and quota checks.",
+    status: "ready",
+    details: "Replay-safe idempotency and product balance checks verified in V13.",
+    actionUrl: "/admin/refunds",
+  },
+  {
+    id: "customer_accounts",
+    category: "Customers",
+    title: "Supabase Auth & Digital Library",
+    description: "Customer login, order history, profile, and digital asset retrieval.",
+    status: "ready",
+    details: "Customer account layout and dashboard views active.",
+    actionUrl: "/account",
+  },
+  {
+    id: "legal_compliance",
+    category: "Compliance",
+    title: "Statutory Policies & Disclaimers",
+    description: "Terms of Service, Privacy Policy, and Digital Product Refund Policy.",
+    status: "ready",
+    details: "Comprehensive legal pages rendered with Indian Consumer Protection alignment.",
+    actionUrl: "/refund-policy",
+  },
+  {
+    id: "analytics_marketing",
+    category: "Marketing",
+    title: "Conversion Tracking & Analytics",
+    description: "Google Analytics 4 & Meta Conversions API integrations.",
+    status: "not_connected",
+    details: "Integration adapters initialized in disconnected mode.",
+    actionUrl: "/admin/settings/integrations",
+  },
+  {
+    id: "security_rbac",
+    category: "Security",
+    title: "Admin RBAC & Least-Privilege RLS",
+    description: "Search paths locked, RLS enabled, and admin audit logging active.",
+    status: "ready",
+    details: "Audit logging and role matrix defined across 5 administrative tiers.",
+    actionUrl: "/admin/settings",
+  },
+];

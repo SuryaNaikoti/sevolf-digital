@@ -1,0 +1,446 @@
+[
+  {
+    "viewport": "desktop",
+    "route": "/admin",
+    "name": "01_overview",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_01_overview.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/readiness",
+    "name": "02_readiness",
+    "error": "page.goto: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/admin/readiness\", waiting until \"networkidle\"\u001b[22m\n",
+    "success": false
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/products",
+    "name": "03_products",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_03_products.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/products/14-day-home-reset-kit",
+    "name": "04_product_editor",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_04_product_editor.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/collections",
+    "name": "05_collections",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_05_collections.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/assets",
+    "name": "06_digital_assets",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_06_digital_assets.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/orders",
+    "name": "07_orders",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_07_orders.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/customers",
+    "name": "08_customers",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_08_customers.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/payments",
+    "name": "09_payments",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_09_payments.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/refunds",
+    "name": "10_refunds",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_10_refunds.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/discounts",
+    "name": "11_discounts",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_11_discounts.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/content",
+    "name": "12_content",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_12_content.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/analytics",
+    "name": "13_analytics",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_13_analytics.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/settings",
+    "name": "14_settings",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_14_settings.png",
+    "success": true
+  },
+  {
+    "viewport": "desktop",
+    "route": "/admin/inventory",
+    "name": "15_deferred_inventory",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "desktop_15_deferred_inventory.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin",
+    "name": "01_overview",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_01_overview.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/readiness",
+    "name": "02_readiness",
+    "error": "page.goto: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/admin/readiness\", waiting until \"networkidle\"\u001b[22m\n",
+    "success": false
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/products",
+    "name": "03_products",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_03_products.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/products/14-day-home-reset-kit",
+    "name": "04_product_editor",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_04_product_editor.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/collections",
+    "name": "05_collections",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_05_collections.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/assets",
+    "name": "06_digital_assets",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_06_digital_assets.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/orders",
+    "name": "07_orders",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_07_orders.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/customers",
+    "name": "08_customers",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_08_customers.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/payments",
+    "name": "09_payments",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_09_payments.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/refunds",
+    "name": "10_refunds",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_10_refunds.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/discounts",
+    "name": "11_discounts",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_11_discounts.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/content",
+    "name": "12_content",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_12_content.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/analytics",
+    "name": "13_analytics",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_13_analytics.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/settings",
+    "name": "14_settings",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_14_settings.png",
+    "success": true
+  },
+  {
+    "viewport": "tablet",
+    "route": "/admin/inventory",
+    "name": "15_deferred_inventory",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "tablet_15_deferred_inventory.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin",
+    "name": "01_overview",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_01_overview.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/readiness",
+    "name": "02_readiness",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_02_readiness.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/products",
+    "name": "03_products",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_03_products.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/products/14-day-home-reset-kit",
+    "name": "04_product_editor",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_04_product_editor.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/collections",
+    "name": "05_collections",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_05_collections.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/assets",
+    "name": "06_digital_assets",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_06_digital_assets.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/orders",
+    "name": "07_orders",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_07_orders.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/customers",
+    "name": "08_customers",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_08_customers.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/payments",
+    "name": "09_payments",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_09_payments.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/refunds",
+    "name": "10_refunds",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_10_refunds.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/discounts",
+    "name": "11_discounts",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_11_discounts.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/content",
+    "name": "12_content",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_12_content.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/analytics",
+    "name": "13_analytics",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_13_analytics.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/settings",
+    "name": "14_settings",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_14_settings.png",
+    "success": true
+  },
+  {
+    "viewport": "mobile",
+    "route": "/admin/inventory",
+    "name": "15_deferred_inventory",
+    "status": 200,
+    "title": "SEVOLF Control Center | Administration | SEVOLF Digital",
+    "headerCount": 1,
+    "file": "mobile_15_deferred_inventory.png",
+    "success": true
+  }
+]
