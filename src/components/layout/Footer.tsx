@@ -138,22 +138,22 @@ export function Footer() {
           <div>
             <h4 className="font-serif text-lg text-[#292B27] mb-4 font-medium">Customer Support</h4>
             <ul className="space-y-3 text-[#77766E]">
+              <li><Link href="/contact" className="hover:text-[#292B27] transition-colors">Contact Us</Link></li>
+              <li><Link href="/shipping-policy" className="hover:text-[#292B27] transition-colors">Shipping & Delivery Policy</Link></li>
+              <li><Link href="/refund-policy" className="hover:text-[#292B27] transition-colors">Cancellation & Refunds</Link></li>
               <li><Link href="/account/library" className="hover:text-[#292B27] transition-colors">Digital Library & Downloads</Link></li>
               <li><Link href="/faq" className="hover:text-[#292B27] transition-colors">Frequently Asked Questions</Link></li>
-              <li><Link href="/licensing" className="hover:text-[#292B27] transition-colors">Licensing & Terms of Use</Link></li>
-              <li><Link href="/refund-policy" className="hover:text-[#292B27] transition-colors">Digital Refund Policy</Link></li>
-              <li><Link href="/contact" className="hover:text-[#292B27] transition-colors">Contact Support</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-serif text-lg text-[#292B27] mb-4 font-medium">About & Legal</h4>
             <ul className="space-y-3 text-[#77766E]">
+              <li><Link href="/terms" className="hover:text-[#292B27] transition-colors">Terms and Conditions</Link></li>
+              <li><Link href="/privacy" className="hover:text-[#292B27] transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/licensing" className="hover:text-[#292B27] transition-colors">Licensing & Terms of Use</Link></li>
               <li><Link href="/about" className="hover:text-[#292B27] transition-colors">About SEVOLF</Link></li>
               <li><Link href="/journal" className="hover:text-[#292B27] transition-colors">The Journal</Link></li>
-              <li><Link href="/privacy" className="hover:text-[#292B27] transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-[#292B27] transition-colors">Terms of Service</Link></li>
-              <li><a href="https://sevolf.store" target="_blank" rel="noopener noreferrer" className="hover:text-[#292B27] transition-colors">Physical Store (SEVOLF.STORE) ↗</a></li>
             </ul>
           </div>
         </div>
@@ -164,9 +164,9 @@ export function Footer() {
           <div className="flex items-center gap-6">
             <span>Secure 256-bit SSL Commerce</span>
             <span>•</span>
-            <span>Razorpay & Stripe Ready</span>
+            <span>Razorpay Verified Merchant</span>
             <span>•</span>
-            <span>Global Delivery</span>
+            <span>Instant Digital Delivery</span>
           </div>
         </div>
       </div>
