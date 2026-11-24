@@ -107,7 +107,7 @@ export default function RefundPolicyPage() {
               To submit a cancellation or refund inquiry, please provide your order reference number, checkout email address, and a brief description of the issue:
             </p>
             <p className="bg-[#FAF8F5] border border-[#DDD8CD] p-4 rounded-xs text-xs text-[#292B27]">
-              <strong>Support Email:</strong> support@sevolf.store<br />
+              <strong>Support Email:</strong> support@sevolf.shop<br />
               <strong>Contact Page:</strong> <Link href="/contact" className="underline hover:text-[#657052]">https://sevolf-digital.vercel.app/contact</Link><br />
               <strong>Support Operating Window:</strong> Monday – Friday, 9:00 AM – 6:00 PM IST
             </p>

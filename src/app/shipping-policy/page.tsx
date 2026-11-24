@@ -80,7 +80,7 @@ export default function ShippingPolicyPage() {
               If you have completed payment but have not received your digital delivery within 10 minutes:
             </p>
             <ol className="list-decimal list-inside space-y-2 pl-2">
-              <li>Check your email spam, promotions, or junk folders for an email from <code className="text-xs bg-[#EAE5DA] px-1.5 py-0.5 rounded text-[#292B27]">support@sevolf.store</code>.</li>
+              <li>Check your email spam, promotions, or junk folders for an email from <code className="text-xs bg-[#EAE5DA] px-1.5 py-0.5 rounded text-[#292B27]">support@sevolf.shop</code>.</li>
               <li>Verify that the email address entered during checkout was spelled correctly without typographical errors.</li>
               <li>If you placed an order as a registered customer, log into your <Link href="/account/orders" className="underline text-[#292B27] hover:text-[#657052]">Order History</Link> where active download links are rendered.</li>
               <li>If technical network interruptions or mailbox restrictions prevent email delivery, our automated server queue retries dispatch with backoff intervals.</li>
@@ -93,7 +93,7 @@ export default function ShippingPolicyPage() {
               4. Reissuing Expired or Lost Links
             </h2>
             <p>
-              If your 30-day download link expires or you inadvertently misplace your files, please contact us at <a href="mailto:support@sevolf.store" className="underline text-[#292B27] hover:text-[#657052]">support@sevolf.store</a> or through our <Link href="/contact" className="underline text-[#292B27] hover:text-[#657052]">Contact Form</Link> with your order reference number and checkout email. We will gladly regenerate your secure access link free of charge after verifying your purchase record.
+              If your 30-day download link expires or you inadvertently misplace your files, please contact us at <a href="mailto:support@sevolf.shop" className="underline text-[#292B27] hover:text-[#657052]">support@sevolf.shop</a> or through our <Link href="/contact" className="underline text-[#292B27] hover:text-[#657052]">Contact Form</Link> with your order reference number and checkout email. We will gladly regenerate your secure access link free of charge after verifying your purchase record.
             </p>
           </section>
 
@@ -106,7 +106,7 @@ export default function ShippingPolicyPage() {
               Our customer care desk is dedicated to ensuring you can open, read, and utilize your purchased tools without friction. For technical replacement requests, file format queries, or assistance with e-readers and tablet applications:
             </p>
             <p className="bg-[#FAF8F5] border border-[#DDD8CD] p-4 rounded-xs text-xs text-[#292B27]">
-              <strong>Support Email:</strong> support@sevolf.store<br />
+              <strong>Support Email:</strong> support@sevolf.shop<br />
               <strong>Response Time:</strong> Within 24 business hours<br />
               <strong>Contact Page:</strong> <Link href="/contact" className="underline hover:text-[#657052]">https://sevolf-digital.vercel.app/contact</Link>
             </p>

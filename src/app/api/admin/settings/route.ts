@@ -49,7 +49,7 @@ export async function GET(request: Request) {
         isLiveActive: false, // Live email dispatch disabled until owner authorization
         fields: [
           { key: "apiKey", label: "API Key", type: "password", isSecret: true, configured: Boolean(resendKey && !resendKey.includes("your_")), maskedValue: resendKey ? "re_••••••••••••" : "" },
-          { key: "fromEmail", label: "From Address", type: "text", isSecret: false, configured: true, maskedValue: "SEVOLF Digital <orders@sevolf.store>" },
+          { key: "fromEmail", label: "From Address", type: "text", isSecret: false, configured: true, maskedValue: "SEVOLF Digital <support@sevolf.shop>" },
         ],
       },
       {
@@ -178,7 +178,7 @@ export async function POST(request: Request) {
 
       if (providerId === "resend") {
         const key = process.env.RESEND_API_KEY;
-        const testRecipient = body.recipientEmail || process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "test@sevolf.store";
+        const testRecipient = body.recipientEmail || process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@sevolf.shop";
         const sendTestEmail = Boolean(body.sendTestEmail);
 
         if (!key || key.includes("your_") || key.trim().length === 0) {
@@ -198,7 +198,8 @@ export async function POST(request: Request) {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                from: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "onboarding@resend.dev",
+                from: process.env.RESEND_FROM_EMAIL || process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "SEVOLF Digital <support@sevolf.shop>",
+                reply_to: "support@sevolf.shop",
                 to: testRecipient,
                 subject: "SEVOLF Digital — Resend Integration Test Delivery",
                 html: "<p>This is a test transactional email verifying your Resend API configuration.</p>",

@@ -41,8 +41,8 @@ export const INTEGRATION_REGISTRY_CONFIG: IntegrationCardConfig[] = [
     environment: "live",
     fields: [
       { key: "apiKey", label: "API Key", type: "password", placeholder: "re_••••••••••••", required: true, isSecret: true },
-      { key: "fromEmail", label: "From Address", type: "text", placeholder: "SEVOLF Digital <orders@sevolf.com>", required: true },
-      { key: "replyTo", label: "Reply-To Email", type: "text", placeholder: "support@sevolf.com" },
+      { key: "fromEmail", label: "From Address", type: "text", placeholder: "SEVOLF Digital <support@sevolf.shop>", required: true },
+      { key: "replyTo", label: "Reply-To Email", type: "text", placeholder: "support@sevolf.shop" },
     ],
   },
   // Messaging

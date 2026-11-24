@@ -105,7 +105,7 @@ export default function TermsPage() {
               If you encounter technical issues, download access difficulties, or licensing questions, our customer care team is available to assist you:
             </p>
             <p className="bg-[#FAF8F5] border border-[#DDD8CD] p-4 rounded-xs text-xs text-[#292B27]">
-              <strong>Support Email:</strong> support@sevolf.store<br />
+              <strong>Support Email:</strong> support@sevolf.shop<br />
               <strong>Contact Page:</strong> <Link href="/contact" className="underline hover:text-[#657052]">https://sevolf-digital.vercel.app/contact</Link><br />
               <strong>Operating Hours:</strong> Monday through Friday, 9:00 AM – 6:00 PM IST (Response within 24–48 hours)
             </p>

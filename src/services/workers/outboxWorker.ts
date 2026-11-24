@@ -43,7 +43,11 @@ async function sendDeliveryEmail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@sevolf.store",
+        from:
+          process.env.RESEND_FROM_EMAIL ||
+          process.env.NEXT_PUBLIC_SUPPORT_EMAIL ||
+          "SEVOLF Digital <support@sevolf.shop>",
+        reply_to: "support@sevolf.shop",
         to: customerEmail,
         subject: "Your SEVOLF Digital Download is Ready",
         html: `

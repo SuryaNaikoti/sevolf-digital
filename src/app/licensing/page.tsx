@@ -47,7 +47,7 @@ export default function LicensingPage() {
           <div className="p-6 bg-[#EAE5DA] border border-[#DDD8CD] rounded-sm space-y-3">
             <h2 className="font-serif text-2xl font-medium text-[#292B27]">3. Institutional & Classroom Licences</h2>
             <p className="text-sm text-[#77766E] leading-relaxed">
-              Schools, learning centers, and corporate teams wishing to distribute physical or digital copies across multiple educators or classrooms can request multi-seat extensions by writing to licensing@sevolf.store.
+              Schools, learning centers, and corporate teams wishing to distribute physical or digital copies across multiple educators or classrooms can request multi-seat extensions by writing to support@sevolf.shop.
             </p>
           </div>
         </div>

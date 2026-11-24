@@ -100,7 +100,7 @@ export default function PrivacyPage() {
               You have the right to request access to the personal records associated with your email, request corrections, or request account closure. For any privacy-related requests or questions:
             </p>
             <p className="bg-[#FAF8F5] border border-[#DDD8CD] p-4 rounded-xs text-xs text-[#292B27]">
-              <strong>Email:</strong> support@sevolf.store<br />
+              <strong>Email:</strong> support@sevolf.shop<br />
               <strong>Contact Page:</strong> <Link href="/contact" className="underline hover:text-[#657052]">https://sevolf-digital.vercel.app/contact</Link><br />
               <strong>Response Time:</strong> Within 48 business hours
             </p>
