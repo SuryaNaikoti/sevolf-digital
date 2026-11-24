@@ -47,21 +47,9 @@ export async function updateSession(request: NextRequest) {
       url.searchParams.set("redirect", pathname);
       return NextResponse.redirect(url);
     }
-
-    // Role verification against database public.profiles
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role_id, roles(name)")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    const roleName = (profile?.roles as any)?.name;
-    if (roleName !== "admin") {
-      // Authenticated non-admin: deny access to /admin and route to /account
-      const url = request.nextUrl.clone();
-      url.pathname = "/account";
-      return NextResponse.redirect(url);
-    }
+    // Authenticated users are allowed to proceed to the server-side admin authorization layer
+    // (AdminLayout and admin API routes), where requireAdminSession() authoritatively validates
+    // the user's role against public.profiles using the privileged service-role client.
   }
 
   // 2. Protected customer account routes: redirect unauthenticated users to /login
