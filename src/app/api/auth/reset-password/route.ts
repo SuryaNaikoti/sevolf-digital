@@ -31,8 +31,26 @@ export async function POST(request: Request) {
       },
     });
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.sevolf.shop";
-    const redirectTo = `${siteUrl}/auth/callback?next=/reset-password`;
+    // Safely resolve the base origin for password recovery redirect:
+    // In production, enforce HTTPS and strictly prohibit localhost or insecure HTTP
+    const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+    const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+    let siteUrl = "https://www.sevolf.shop";
+    if (isProduction) {
+      if (configuredUrl && configuredUrl.startsWith("https://") && !configuredUrl.includes("localhost") && !configuredUrl.includes("127.0.0.1")) {
+        siteUrl = configuredUrl;
+      } else {
+        siteUrl = "https://www.sevolf.shop";
+      }
+    } else {
+      // Local development environment
+      siteUrl = configuredUrl || "http://localhost:3000";
+    }
+
+    // Strip trailing slashes for clean URL concatenation
+    const sanitizedBaseUrl = siteUrl.replace(/\/+$/, "");
+    const redirectTo = `${sanitizedBaseUrl}/auth/callback?next=/reset-password`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
