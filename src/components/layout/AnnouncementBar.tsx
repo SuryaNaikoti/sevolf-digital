@@ -28,7 +28,7 @@ export function AnnouncementBar() {
           <div className="hidden md:flex items-center gap-4 text-xs text-[#77766E]">
             <span>Instant Download</span>
             <span>•</span>
-            <span>Lifetime Access</span>
+            <span>Permanent Library Access</span>
           </div>
           <button
             onClick={() => setDismissed(true)}
