@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(request: Request) {
   try {
@@ -40,12 +41,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 401 });
     }
 
+    // Authoritative server-side profile & role verification
+    let role = "customer";
+    try {
+      const adminClient = createAdminClient();
+      const { data: profile } = await adminClient
+        .from("profiles")
+        .select("role_id, roles(name)")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      if (profile && profile.roles) {
+        role = (profile.roles as any)?.name || "customer";
+      }
+    } catch {
+      // Default to customer on lookup issue
+    }
+
     return NextResponse.json({
       success: true,
       user: {
         id: data.user.id,
         email: data.user.email,
         name: data.user.user_metadata?.full_name || data.user.email?.split("@")[0] || "Valued Patron",
+        role,
+        isAdmin: role === "admin",
       },
     });
   } catch (err: any) {

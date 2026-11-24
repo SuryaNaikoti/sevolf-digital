@@ -37,8 +37,34 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected customer account routes: redirect unauthenticated users to /login
   const pathname = request.nextUrl.pathname;
+
+  // 1. Protected Admin Dashboard Routes (/admin/*)
+  if (pathname.startsWith("/admin")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url);
+    }
+
+    // Role verification against database public.profiles
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role_id, roles(name)")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const roleName = (profile?.roles as any)?.name;
+    if (roleName !== "admin") {
+      // Authenticated non-admin: deny access to /admin and route to /account
+      const url = request.nextUrl.clone();
+      url.pathname = "/account";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // 2. Protected customer account routes: redirect unauthenticated users to /login
   if (pathname.startsWith("/account")) {
     if (!user) {
       const url = request.nextUrl.clone();

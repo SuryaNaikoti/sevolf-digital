@@ -45,6 +45,56 @@ export default function IntegrationsSettingsPage() {
   const [sendingTestEmail, setSendingTestEmail] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Security / Change Password State
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStatus, setPasswordStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [passwordFeedback, setPasswordFeedback] = useState<{ success: boolean; message: string } | null>(null);
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordFeedback(null);
+
+    if (newPassword.length < 8) {
+      setPasswordFeedback({ success: false, message: "New password must be at least 8 characters long." });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordFeedback({ success: false, message: "New password and confirmation do not match." });
+      return;
+    }
+
+    setPasswordStatus("loading");
+
+    try {
+      const res = await fetch("/api/admin/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPasswordFeedback({ success: false, message: data.error || "Password change failed." });
+        setPasswordStatus("error");
+      } else {
+        setPasswordFeedback({ success: true, message: "Password updated successfully." });
+        setPasswordStatus("success");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    } catch {
+      setPasswordFeedback({ success: false, message: "Network error occurred while updating password." });
+      setPasswordStatus("error");
+    }
+  };
+
   const fetchSettings = async () => {
     setLoading(true);
     setError(null);
@@ -301,6 +351,130 @@ export default function IntegrationsSettingsPage() {
           })}
         </div>
       )}
+
+      {/* Security & Authentication Section */}
+      <div className="bg-white border border-[#E1E3E5] rounded-lg p-5 sm:p-6 shadow-2xs space-y-6">
+        <div className="flex items-center space-x-2.5 pb-4 border-b border-[#E1E3E5]">
+          <KeyRound className="w-5 h-5 text-[#202223]" />
+          <div>
+            <h2 className="text-base font-semibold text-[#202223]">Admin Security & Password</h2>
+            <p className="text-xs text-[#6D7175]">
+              Update your administrator credentials through Supabase Auth identity verification.
+            </p>
+          </div>
+        </div>
+
+        {passwordFeedback && (
+          <div
+            className={`p-3.5 rounded-md text-xs border flex items-start gap-2.5 ${
+              passwordFeedback.success
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-red-50 border-red-200 text-red-800"
+            }`}
+          >
+            {passwordFeedback.success ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            )}
+            <span className="leading-relaxed">{passwordFeedback.message}</span>
+          </div>
+        )}
+
+        <form onSubmit={handlePasswordChange} className="max-w-xl space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-[#202223] mb-1.5">
+              Current Password
+            </label>
+            <div className="relative">
+              <input
+                type={showCurrentPassword ? "text" : "password"}
+                required
+                autoComplete="current-password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password"
+                className="w-full text-xs bg-[#F6F6F7] border border-[#D2D5D8] rounded-md px-3 py-2 pr-9 text-[#202223] focus:outline-hidden focus:bg-white focus:border-[#202223]"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8C9196] hover:text-[#202223]"
+              >
+                {showCurrentPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-[#202223] mb-1.5">
+                New Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  required
+                  autoComplete="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Min. 8 characters"
+                  className="w-full text-xs bg-[#F6F6F7] border border-[#D2D5D8] rounded-md px-3 py-2 pr-9 text-[#202223] focus:outline-hidden focus:bg-white focus:border-[#202223]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8C9196] hover:text-[#202223]"
+                >
+                  {showNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[#202223] mb-1.5">
+                Confirm New Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  className="w-full text-xs bg-[#F6F6F7] border border-[#D2D5D8] rounded-md px-3 py-2 pr-9 text-[#202223] focus:outline-hidden focus:bg-white focus:border-[#202223]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8C9196] hover:text-[#202223]"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 bg-[#F6F6F7] border border-[#E1E3E5] rounded-md text-[11px] text-[#6D7175] space-y-1">
+            <p className="font-semibold text-[#202223]">Password Security Guidelines:</p>
+            <ul className="list-disc list-inside space-y-0.5 pl-1">
+              <li>Must contain at least 8 characters.</li>
+              <li>Stored only in Supabase Auth cryptographic vault (never in public database tables).</li>
+              <li>Requires identity re-authentication before update.</li>
+            </ul>
+          </div>
+
+          <button
+            type="submit"
+            disabled={passwordStatus === "loading"}
+            className="px-4 py-2 rounded-md text-xs font-semibold bg-[#202223] text-white hover:bg-black disabled:opacity-50 transition-colors shadow-2xs flex items-center gap-1.5"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>{passwordStatus === "loading" ? "Updating Password..." : "Update Password"}</span>
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

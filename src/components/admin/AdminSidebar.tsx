@@ -21,7 +21,9 @@ import {
   Store,
   KeyRound,
   ShieldCheck,
+  LogOut,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface AdminSidebarProps {
   mobileOpen: boolean;
@@ -93,6 +95,17 @@ const NAV_SECTIONS: NavSection[] = [
 
 export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    } catch {
+      router.push("/login");
+    }
+  };
 
   return (
     <>
@@ -184,20 +197,29 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
         <div className="h-13 px-3 border-t border-[#2C2C2C] bg-[#141414] flex items-center justify-between">
           <div className="flex items-center space-x-2.5 min-w-0">
             <div className="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-              SD
+              SN
             </div>
             <div className="leading-tight truncate">
               <p className="text-xs font-medium text-white truncate">Administrator</p>
-              <p className="text-[10px] text-[#8C9196] font-mono truncate">founder@sevolf.com</p>
+              <p className="text-[10px] text-[#8C9196] font-mono truncate">suryanaikoti@gmail.com</p>
             </div>
           </div>
-          <Link
-            href="/admin/settings"
-            className="p-1.5 text-[#8C9196] hover:text-white rounded hover:bg-[#2C2C2C] transition-colors"
-            title="Admin settings"
-          >
-            <Settings className="w-3.5 h-3.5" />
-          </Link>
+          <div className="flex items-center space-x-1">
+            <Link
+              href="/admin/settings"
+              className="p-1.5 text-[#8C9196] hover:text-white rounded hover:bg-[#2C2C2C] transition-colors"
+              title="Admin settings & security"
+            >
+              <Settings className="w-3.5 h-3.5" />
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="p-1.5 text-[#8C9196] hover:text-red-400 rounded hover:bg-[#2C2C2C] transition-colors"
+              title="Sign out of control center"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </aside>
     </>
