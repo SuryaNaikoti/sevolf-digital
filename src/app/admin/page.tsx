@@ -386,8 +386,16 @@ export default async function AdminOverviewPage() {
                     </div>
                   </div>
                   <div className="text-right shrink-0 ml-2">
-                    <span className="font-mono font-medium text-[#22231F]">₹{p.price}</span>
-                    <p className="text-[10px] text-[#8C6D34] font-mono">Draft</p>
+                    <span className="font-mono font-medium text-[#22231F] block">₹{p.price}</span>
+                    <span
+                      className={`inline-block mt-0.5 text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                        p.status === "published"
+                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                          : "bg-amber-50 text-amber-800 border-amber-200"
+                      }`}
+                    >
+                      {p.status === "published" ? "Published" : "Draft"}
+                    </span>
                   </div>
                 </div>
               ))}

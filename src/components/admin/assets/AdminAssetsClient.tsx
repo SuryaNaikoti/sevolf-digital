@@ -29,6 +29,7 @@ interface DigitalAssetItem {
   mime_type: string;
   file_version: string;
   checksum: string | null;
+  is_active?: boolean;
   created_at: string;
   products?: { id: string; name: string; slug: string; status: string } | null;
 }
@@ -185,6 +186,7 @@ export default function AdminAssetsClient({
                   <th className="py-3 px-5">File Name</th>
                   <th className="py-3 px-5">Attached Product</th>
                   <th className="py-3 px-5">Version</th>
+                  <th className="py-3 px-5">Status</th>
                   <th className="py-3 px-5">Size</th>
                   <th className="py-3 px-5 text-right">Storage Path</th>
                 </tr>
@@ -205,6 +207,17 @@ export default function AdminAssetsClient({
                     </td>
                     <td className="py-3.5 px-5 font-mono text-[11px] text-[#22231F]">
                       {a.file_version}
+                    </td>
+                    <td className="py-3.5 px-5">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono border ${
+                          a.is_active !== false
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                            : "bg-[#F7F5F0] text-[#85847D] border-[#E8E5DD]"
+                        }`}
+                      >
+                        {a.is_active !== false ? "Active" : "Retired"}
+                      </span>
                     </td>
                     <td className="py-3.5 px-5 font-mono text-[11px] text-[#85847D]">
                       {formatFileSize(a.file_size_bytes)}

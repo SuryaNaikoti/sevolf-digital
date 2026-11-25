@@ -90,3 +90,15 @@ export function isTestTransaction(tx: ClassifiableTransaction | null | undefined
 export function isLiveTransaction(tx: ClassifiableTransaction | null | undefined): boolean {
   return classifyTransactionEnvironment(tx) === "live";
 }
+
+/**
+ * Resolves the authoritative Razorpay environment strictly from the server-side key ID.
+ * Never trusts client-supplied environment flags.
+ */
+export function resolveRazorpayEnvironment(keyId?: string | null): TransactionEnvironment {
+  if (!keyId || typeof keyId !== "string") return "unknown";
+  const trimmed = keyId.trim();
+  if (trimmed.startsWith("rzp_test_")) return "test";
+  if (trimmed.startsWith("rzp_live_") && trimmed.length > 9) return "live";
+  return "unknown";
+}

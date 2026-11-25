@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { resolveRazorpayEnvironment } from "@/lib/commerce/transactionClassifier";
 import { PRODUCTS } from "@/services/products/mockData";
 
 export async function POST(request: Request) {
@@ -105,6 +106,10 @@ export async function POST(request: Request) {
     // In production store operations, normal catalog products use standard order processing.
     // Sandbox mode is reserved exclusively for the Phase 1C canonical sandbox test fixture (UUID 22222222-2222-2222-2222-222222222222).
     const isSandbox = items.length === 1 && items[0].productId === "22222222-2222-2222-2222-222222222222";
+    const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
+    const serverEnvironment = isSandbox ? "test" : resolveRazorpayEnvironment(razorpayKeyId);
+
     const { data: newOrder, error: orderError } = await adminClient
       .from("orders")
       .insert({
@@ -119,6 +124,7 @@ export async function POST(request: Request) {
         payment_method: "razorpay",
         payment_status: "unpaid",
         is_sandbox: isSandbox,
+        environment: serverEnvironment,
         metadata: {
           country: customer.country || "India",
           source: "web_checkout",
@@ -154,11 +160,8 @@ export async function POST(request: Request) {
     }
 
     // 5. Create Razorpay Payment Order (Live gateway or Sandbox Test Mode)
-    const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
-    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
-
     let gatewayOrderId = `order_${newOrder.id.replace(/-/g, "").slice(0, 16)}`;
-    let isTestMode = true;
+    let isTestMode = serverEnvironment === "test";
 
     if (razorpayKeyId && razorpaySecret && !razorpayKeyId.includes("your_key")) {
       try {
@@ -201,6 +204,7 @@ export async function POST(request: Request) {
       amount: computedTotal,
       currency: targetCurrency,
       status: "created",
+      environment: serverEnvironment,
     });
 
     return NextResponse.json({
