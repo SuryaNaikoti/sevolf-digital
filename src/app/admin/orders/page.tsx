@@ -5,16 +5,22 @@ import {
   ShoppingCart,
   Search,
   Filter,
-  ArrowUpDown,
-  Download,
-  Calendar,
-  AlertCircle,
   RefreshCw,
   Eye,
   CheckCircle2,
   Clock,
   XCircle,
+  Download,
+  FlaskConical,
 } from "lucide-react";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminStatusBadge,
+  AdminButton,
+  AdminEmptyState,
+} from "@/components/admin/ui/AdminComponents";
+import { isTestTransaction, isLiveTransaction } from "@/lib/commerce/transactionClassifier";
 
 interface OrderItem {
   id: string;
@@ -69,6 +75,10 @@ export default function AdminOrdersPage() {
     fetchOrders();
   }, []);
 
+  const isTestOrder = (o: OrderRecord) => {
+    return isTestTransaction(o);
+  };
+
   const filteredOrders = orders.filter((o) => {
     const matchesSearch =
       (o.order_number || "").toLowerCase().includes(search.toLowerCase()) ||
@@ -77,6 +87,8 @@ export default function AdminOrdersPage() {
 
     if (!matchesSearch) return false;
     if (statusFilter === "all") return true;
+    if (statusFilter === "live") return isLiveTransaction(o);
+    if (statusFilter === "test") return isTestTransaction(o);
     if (statusFilter === "paid") return o.status === "paid" || o.payment_status === "paid";
     if (statusFilter === "unpaid") return o.status === "pending" || o.payment_status === "pending";
     if (statusFilter === "unfulfilled") return (o.download_entitlements || []).length === 0;
@@ -84,204 +96,133 @@ export default function AdminOrdersPage() {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-[#202223] tracking-tight">Orders</h1>
-          <p className="text-xs text-[#6D7175]">
-            Real-time customer transactions, payment ledger states, and digital download entitlements.
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-2 shrink-0">
-          <button
+      <AdminPageHeader
+        title="Orders & Transactions"
+        subtitle="Real customer transactions, payment ledger states, and digital download entitlements."
+        badge={{ text: `${orders.length} Total`, variant: "neutral" }}
+        actions={
+          <AdminButton
+            variant="secondary"
+            icon={RefreshCw}
             onClick={fetchOrders}
-            className="flex items-center space-x-1.5 px-3 py-1.5 border border-[#BABFC3] bg-white text-[#202223] text-xs font-semibold rounded-md shadow-2xs hover:bg-[#F6F6F7] transition-colors"
+            disabled={loading}
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#6D7175] ${loading ? "animate-spin" : ""}`} />
-            <span>Refresh</span>
-          </button>
-        </div>
-      </div>
+            Refresh Ledger
+          </AdminButton>
+        }
+      />
 
-      {/* Orders Table Container */}
-      <div className="bg-white border border-[#E1E3E5] rounded-lg overflow-hidden shadow-2xs">
-        {/* Table Filter Tabs */}
-        <div className="border-b border-[#E1E3E5]">
-          <div className="flex items-center space-x-4 px-4 pt-2 text-xs font-medium text-[#6D7175]">
-            <button
-              onClick={() => setStatusFilter("all")}
-              className={`pb-2 transition-colors ${
-                statusFilter === "all"
-                  ? "text-[#202223] font-semibold border-b-2 border-[#202223]"
-                  : "hover:text-[#202223]"
-              }`}
-            >
-              All ({orders.length})
-            </button>
-            <button
-              onClick={() => setStatusFilter("paid")}
-              className={`pb-2 transition-colors ${
-                statusFilter === "paid"
-                  ? "text-[#202223] font-semibold border-b-2 border-[#202223]"
-                  : "hover:text-[#202223]"
-              }`}
-            >
-              Paid
-            </button>
-            <button
-              onClick={() => setStatusFilter("unpaid")}
-              className={`pb-2 transition-colors ${
-                statusFilter === "unpaid"
-                  ? "text-[#202223] font-semibold border-b-2 border-[#202223]"
-                  : "hover:text-[#202223]"
-              }`}
-            >
-              Unpaid
-            </button>
-            <button
-              onClick={() => setStatusFilter("unfulfilled")}
-              className={`pb-2 transition-colors ${
-                statusFilter === "unfulfilled"
-                  ? "text-[#202223] font-semibold border-b-2 border-[#202223]"
-                  : "hover:text-[#202223]"
-              }`}
-            >
-              Unfulfilled
-            </button>
+      {/* Main Table Card */}
+      <AdminCard padding={false}>
+        {/* Controls Bar */}
+        <div className="p-4 sm:p-5 border-b border-[#E8E5DD] flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#FDFCFA]">
+          <div className="relative w-full sm:w-80">
+            <Search className="w-3.5 h-3.5 text-[#85847D] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search by order #, email, patron..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full text-xs font-sans bg-white border border-[#E8E5DD] rounded-md pl-8 pr-3 py-1.5 text-[#22231F] placeholder-[#85847D] focus:outline-hidden focus:border-[#85866A]"
+            />
           </div>
 
-          <div className="p-3 bg-[#FAFBFB] border-t border-[#E1E3E5] flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="relative w-full sm:w-80">
-              <Search className="w-3.5 h-3.5 text-[#8C9196] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by order #, email, or customer name..."
-                className="w-full text-xs bg-white border border-[#BABFC3] rounded pl-8 pr-3 py-1.5 text-[#202223] placeholder-[#8C9196] focus:outline-hidden focus:border-[#202223]"
-              />
-            </div>
-            <div className="text-xs text-[#6D7175] font-mono">
-              Showing {filteredOrders.length} of {orders.length} orders
-            </div>
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <span className="text-[11px] font-mono text-[#85847D] uppercase tracking-wider hidden sm:inline">
+              Filter:
+            </span>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="text-xs font-sans bg-white border border-[#E8E5DD] rounded-md px-3 py-1.5 text-[#22231F] focus:outline-hidden focus:border-[#85866A]"
+            >
+              <option value="all">All Transactions</option>
+              <option value="live">Live Orders Only</option>
+              <option value="test">Test Mode Only</option>
+              <option value="paid">Paid & Captured</option>
+              <option value="unpaid">Pending</option>
+              <option value="unfulfilled">Unfulfilled</option>
+            </select>
           </div>
         </div>
 
-        {/* Content States */}
+        {/* Content Table or Empty State */}
         {loading ? (
-          <div className="p-16 text-center space-y-3">
-            <RefreshCw className="w-6 h-6 text-[#8C9196] animate-spin mx-auto" />
-            <p className="text-xs text-[#6D7175]">Loading verified orders from database...</p>
-          </div>
-        ) : error ? (
-          <div className="p-12 text-center space-y-3">
-            <AlertCircle className="w-8 h-8 text-rose-600 mx-auto" />
-            <h3 className="text-sm font-semibold text-[#202223]">Unable to load orders</h3>
-            <p className="text-xs text-[#6D7175] max-w-sm mx-auto">{error}</p>
-            <button
-              onClick={fetchOrders}
-              className="px-3 py-1.5 bg-[#202223] text-white text-xs font-semibold rounded-md"
-            >
-              Retry
-            </button>
+          <div className="py-16 text-center text-xs text-[#85847D] font-mono">
+            Loading order records from database...
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="p-16 text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-[#F6F6F7] border border-[#E1E3E5] mx-auto flex items-center justify-center text-[#6D7175]">
-              <ShoppingCart className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-[#202223]">No orders found</h3>
-              <p className="text-xs text-[#6D7175] max-w-sm mx-auto">
-                {search || statusFilter !== "all"
-                  ? "No orders match the current filter or search criteria."
-                  : "When customers complete checkout via Razorpay, paid orders and download entitlement tokens will automatically appear here."}
-              </p>
-            </div>
-          </div>
+          <AdminEmptyState
+            icon={ShoppingCart}
+            title="No Orders Found"
+            description="No customer transactions match the selected filter. Real orders will populate once live customer purchases occur."
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-[#FAFBFB] text-[#6D7175] border-b border-[#E1E3E5] font-medium font-mono text-[11px]">
-                  <th className="py-2.5 px-4">Order</th>
-                  <th className="py-2.5 px-4">Date</th>
-                  <th className="py-2.5 px-4">Customer</th>
-                  <th className="py-2.5 px-4">Items</th>
-                  <th className="py-2.5 px-4">Payment</th>
-                  <th className="py-2.5 px-4">Fulfilment</th>
-                  <th className="py-2.5 px-4 text-right">Total</th>
+                <tr className="border-b border-[#E8E5DD] bg-[#FAF8F5] text-[#85847D] font-mono uppercase text-[10px] tracking-wider">
+                  <th className="py-3 px-5">Order #</th>
+                  <th className="py-3 px-5">Patron</th>
+                  <th className="py-3 px-5">Origin</th>
+                  <th className="py-3 px-5">Status</th>
+                  <th className="py-3 px-5">Fulfilment</th>
+                  <th className="py-3 px-5 text-right">Total</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E1E3E5]">
-                {filteredOrders.map((order) => {
-                  const isPaid = order.status === "paid" || order.payment_status === "paid";
-                  const entitlementCount = (order.download_entitlements || []).length;
+              <tbody className="divide-y divide-[#E8E5DD]">
+                {filteredOrders.map((o) => {
+                  const isTest = isTestOrder(o);
+                  const validEntitlements = (o.download_entitlements || []).filter(
+                    (e: any) => e.is_active && !e.is_revoked
+                  );
+                  const isFulfilled = o.status === "paid" && validEntitlements.length > 0;
 
                   return (
-                    <tr key={order.id} className="hover:bg-[#FAFBFB] transition-colors">
-                      <td className="py-3 px-4 font-mono font-semibold text-[#202223]">
-                        {order.order_number || order.id.slice(0, 8)}
-                        {order.is_sandbox && (
-                          <span className="ml-1.5 px-1.5 py-0.5 rounded text-[9px] bg-amber-50 text-amber-700 border border-amber-200 uppercase font-mono">
-                            Sandbox
-                          </span>
-                        )}
+                    <tr key={o.id} className="hover:bg-[#FAF8F5] transition-colors">
+                      <td className="py-3.5 px-5 font-mono font-medium text-[#22231F]">
+                        {o.order_number}
                       </td>
-                      <td className="py-3 px-4 text-[#6D7175]">
-                        {new Date(order.created_at).toLocaleDateString()}
+                      <td className="py-3.5 px-5">
+                        <p className="font-medium text-[#22231F]">{o.customer_name || "Valued Patron"}</p>
+                        <p className="text-[11px] text-[#85847D] font-mono">{o.customer_email}</p>
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="font-medium text-[#202223]">{order.customer_name || "Guest"}</div>
-                        <div className="text-[11px] text-[#6D7175] font-mono">{order.customer_email}</div>
-                      </td>
-                      <td className="py-3 px-4">
-                        {(order.order_items || []).length > 0 ? (
-                          <span className="text-[#202223]">
-                            {order.order_items[0].product_name}
-                            {order.order_items.length > 1 && ` (+${order.order_items.length - 1} more)`}
+                      <td className="py-3.5 px-5">
+                        {isTest ? (
+                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-mono font-medium uppercase tracking-wider bg-[#FBF7F0] text-[#8C6D34] border border-[#EADFCB]">
+                            <FlaskConical className="w-3 h-3 text-[#8C6D34]" />
+                            <span>Test Mode</span>
                           </span>
                         ) : (
-                          <span className="text-[#8C9196] italic">Digital product</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium uppercase tracking-wider bg-[#F2F5F0] text-[#55694B] border border-[#D4DCCF]">
+                            Live
+                          </span>
                         )}
                       </td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono ${
-                            isPaid
-                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                              : "bg-amber-50 text-amber-800 border border-amber-200"
-                          }`}
-                        >
-                          {isPaid ? (
-                            <>
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              <span>Paid</span>
-                            </>
-                          ) : (
-                            <>
-                              <Clock className="w-3 h-3 text-amber-600" />
-                              <span>Pending</span>
-                            </>
-                          )}
-                        </span>
+                      <td className="py-3.5 px-5">
+                        <AdminStatusBadge variant={o.status === "paid" ? "success" : "warning"}>
+                          {o.status}
+                        </AdminStatusBadge>
                       </td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono ${
-                            entitlementCount > 0
-                              ? "bg-sky-50 text-sky-800 border border-sky-200"
-                              : "bg-[#F6F6F7] text-[#6D7175] border border-[#E1E3E5]"
-                          }`}
-                        >
-                          <Download className="w-3 h-3" />
-                          <span>{entitlementCount > 0 ? `${entitlementCount} Assets Ready` : "Unfulfilled"}</span>
-                        </span>
+                      <td className="py-3.5 px-5">
+                        {isFulfilled ? (
+                          <span className="text-[11px] font-mono text-[#55694B] bg-[#F2F5F0] border border-[#D4DCCF] px-2 py-0.5 rounded">
+                            {validEntitlements.length} Delivered (Complete)
+                          </span>
+                        ) : validEntitlements.length > 0 ? (
+                          <span className="text-[11px] font-mono text-[#8C6D34] bg-[#FBF7F0] border border-[#EADFCB] px-2 py-0.5 rounded">
+                            {validEntitlements.length} Delivered (Partial)
+                          </span>
+                        ) : (
+                          <span className="text-[11px] font-mono text-[#85847D] bg-[#F7F5F0] border border-[#E8E5DD] px-2 py-0.5 rounded">
+                            0 Delivered (Pending)
+                          </span>
+                        )}
                       </td>
-                      <td className="py-3 px-4 text-right font-mono font-semibold text-[#202223]">
-                        {order.currency || "INR"} {Number(order.total_amount || 0).toLocaleString()}
+                      <td className="py-3.5 px-5 text-right font-serif text-sm font-medium text-[#22231F]">
+                        ₹{o.total_amount}
                       </td>
                     </tr>
                   );
@@ -290,7 +231,7 @@ export default function AdminOrdersPage() {
             </table>
           </div>
         )}
-      </div>
+      </AdminCard>
     </div>
   );
 }

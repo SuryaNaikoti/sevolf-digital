@@ -1,9 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { FolderKanban, Plus, ExternalLink, Edit, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { FolderKanban, Plus, ExternalLink, Edit, CheckCircle2, AlertCircle, X, Layers } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminStatusBadge,
+  AdminButton,
+  AdminEmptyState,
+} from "@/components/admin/ui/AdminComponents";
 
 interface CollectionItem {
   id: string;
@@ -58,7 +65,6 @@ export default function AdminCollectionsClient({ initialCollections }: AdminColl
 
     try {
       if (editingCollection) {
-        // Edit collection
         const res = await fetch("/api/admin/collections", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -77,7 +83,6 @@ export default function AdminCollectionsClient({ initialCollections }: AdminColl
           prev.map((c) => (c.id === editingCollection.id ? { ...c, ...formData } : c))
         );
       } else {
-        // Create collection
         const res = await fetch("/api/admin/collections", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -86,10 +91,9 @@ export default function AdminCollectionsClient({ initialCollections }: AdminColl
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to create collection");
 
-        setFeedback({ type: "success", message: `Collection "${formData.name}" created successfully!` });
-        setCollections((prev) => [...prev, data.collection]);
+        setFeedback({ type: "success", message: `Collection "${data.collection.name}" created successfully!` });
+        setCollections((prev) => [data.collection, ...prev]);
       }
-
       setIsModalOpen(false);
       router.refresh();
     } catch (err: any) {
@@ -100,180 +104,175 @@ export default function AdminCollectionsClient({ initialCollections }: AdminColl
   };
 
   return (
-    <div className="space-y-4">
-      {/* Alert feedback */}
+    <div className="space-y-8">
+      {/* Header */}
+      <AdminPageHeader
+        title="Collections & Categories"
+        subtitle="Curate themed product groupings and educational categories for SEVOLF storefront."
+        badge={{ text: `${collections.length} Collections`, variant: "neutral" }}
+        actions={
+          <AdminButton variant="primary" icon={Plus} onClick={openCreateModal}>
+            Add Collection
+          </AdminButton>
+        }
+      />
+
       {feedback && (
         <div
-          className={`p-3 rounded-lg border text-xs flex items-center justify-between ${
+          className={`p-4 rounded-lg text-xs flex items-center space-x-2.5 border ${
             feedback.type === "success"
-              ? "bg-[#E3F1DF] border-[#C3E6BD] text-[#008060]"
-              : "bg-[#FFF4F4] border-[#FED2D2] text-[#D72C0D]"
+              ? "bg-[#F2F5F0] border-[#D4DCCF] text-[#55694B]"
+              : "bg-[#FDF4F3] border-[#F0D0CD] text-[#9A423B]"
           }`}
         >
-          <div className="flex items-center space-x-2">
-            {feedback.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 shrink-0" />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-          <button onClick={() => setFeedback(null)} className="text-current opacity-70 hover:opacity-100">
-            <X className="w-3.5 h-3.5" />
-          </button>
+          {feedback.type === "success" ? (
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 shrink-0" />
+          )}
+          <span>{feedback.message}</span>
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-[#202223] tracking-tight">Collections</h1>
-          <p className="text-xs text-[#6D7175]">
-            Organize digital assets into curated thematic packages and storefront catalogs.
-          </p>
-        </div>
-
-        <button
-          onClick={openCreateModal}
-          className="px-3.5 py-1.5 bg-[#008060] hover:bg-[#006e52] text-white text-xs font-semibold rounded-md shadow-2xs transition-colors flex items-center space-x-1.5 shrink-0 self-start sm:self-auto"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Create collection</span>
-        </button>
-      </div>
-
-      {/* Collection Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {collections.map((col) => (
-          <div
-            key={col.id}
-            className="bg-white border border-[#E1E3E5] rounded-lg p-5 shadow-2xs space-y-3 hover:border-[#BABFC3] transition-colors"
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-[10px] font-mono font-semibold uppercase text-[#6D7175] tracking-wider">
-                  COLLECTION #{col.display_order}
-                </span>
-                <h3 className="text-sm font-bold text-[#202223]">{col.name}</h3>
-                <p className="text-xs font-mono text-[#008060]">/{col.slug}</p>
-              </div>
-              <div className="flex items-center space-x-1">
-                <button
-                  onClick={() => openEditModal(col)}
-                  className="p-1 hover:bg-[#F6F6F7] rounded text-[#6D7175] hover:text-[#202223]"
-                  title="Edit collection"
-                >
-                  <Edit className="w-3.5 h-3.5" />
-                </button>
-                <Link
-                  href={`/shop/collections/${col.slug}`}
-                  target="_blank"
-                  className="p-1 hover:bg-[#F6F6F7] rounded text-[#6D7175] hover:text-[#202223]"
-                  title="Preview in Storefront"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-
-            <p className="text-xs text-[#6D7175] line-clamp-2">
-              {col.description || col.tagline || "No description provided."}
-            </p>
-
-            <div className="pt-2 border-t border-[#E1E3E5] flex items-center justify-between text-xs">
-              <span className="text-[11px] text-[#6D7175]">Active & Visible in Catalog</span>
-              <span className="text-[11px] font-semibold text-[#008060]">Ready</span>
-            </div>
+      {/* Collections Card */}
+      <AdminCard padding={false}>
+        {collections.length === 0 ? (
+          <AdminEmptyState
+            icon={Layers}
+            title="No Collections Created"
+            description="Organize your digital products into thematic collections to display on the storefront."
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-[#E8E5DD] bg-[#FAF8F5] text-[#85847D] font-mono uppercase text-[10px] tracking-wider">
+                  <th className="py-3 px-5">Collection Name</th>
+                  <th className="py-3 px-5">Slug</th>
+                  <th className="py-3 px-5">Tagline</th>
+                  <th className="py-3 px-5">Status</th>
+                  <th className="py-3 px-5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E8E5DD]">
+                {collections.map((col) => (
+                  <tr key={col.id} className="hover:bg-[#FAF8F5] transition-colors">
+                    <td className="py-3.5 px-5">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded bg-[#F7F5F0] border border-[#E8E5DD] flex items-center justify-center shrink-0 text-[#85866A]">
+                          <Layers className="w-4 h-4" />
+                        </div>
+                        <span className="font-medium text-[#22231F]">{col.name}</span>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-5 font-mono text-[11px] text-[#85847D]">
+                      /collections/{col.slug}
+                    </td>
+                    <td className="py-3.5 px-5 text-[#85847D] max-w-xs truncate">
+                      {col.tagline || "—"}
+                    </td>
+                    <td className="py-3.5 px-5">
+                      <AdminStatusBadge variant="success">Active</AdminStatusBadge>
+                    </td>
+                    <td className="py-3.5 px-5 text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button
+                          onClick={() => openEditModal(col)}
+                          className="p-1.5 rounded hover:bg-[#F7F5F0] text-[#85847D] hover:text-[#22231F] transition-colors"
+                          title="Edit Collection"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                        </button>
+                        <Link
+                          href={`/collections/${col.slug}`}
+                          target="_blank"
+                          className="p-1.5 rounded hover:bg-[#F7F5F0] text-[#85847D] hover:text-[#22231F] transition-colors"
+                          title="Preview Collection"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
-      </div>
+        )}
+      </AdminCard>
 
-      {/* Modal for Create / Edit */}
+      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-lg border border-[#E1E3E5] shadow-xl w-full max-w-md overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#E1E3E5]">
-              <div className="flex items-center space-x-2">
-                <FolderKanban className="w-4 h-4 text-[#008060]" />
-                <h3 className="text-sm font-bold text-[#202223]">
-                  {editingCollection ? "Edit Collection" : "Create New Collection"}
-                </h3>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="text-[#6D7175] hover:text-[#202223]">
+        <div className="fixed inset-0 z-50 bg-[#161715]/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-[#E8E5DD] rounded-xl max-w-md w-full overflow-hidden shadow-xl animate-in fade-in zoom-in-95">
+            <div className="px-6 py-4 border-b border-[#E8E5DD] flex items-center justify-between bg-[#FDFCFA]">
+              <h2 className="text-base font-serif font-normal text-[#22231F]">
+                {editingCollection ? "Edit Collection" : "Add Studio Collection"}
+              </h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-1.5 rounded-md text-[#85847D] hover:text-[#22231F]"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-5 space-y-3 text-xs">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs font-sans">
               <div>
-                <label className="block font-semibold text-[#202223] mb-1">Collection Title *</label>
+                <label className="block text-[#22231F] font-medium mb-1">Collection Name</label>
                 <input
                   type="text"
                   required
+                  placeholder="e.g. Early Childhood Mastery"
                   value={formData.name}
                   onChange={(e) => {
                     const name = e.target.value;
                     const slug = editingCollection
                       ? formData.slug
-                      : name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-                    setFormData((prev) => ({ ...prev, name, slug }));
+                      : name
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, "-")
+                          .replace(/(^-|-$)+/g, "");
+                    setFormData({ ...formData, name, slug });
                   }}
-                  className="w-full bg-white border border-[#BABFC3] rounded px-3 py-1.5 text-[#202223] focus:border-[#008060] focus:outline-hidden"
+                  className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F] focus:outline-hidden focus:border-[#85866A]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-[#202223] mb-1">Slug *</label>
+                <label className="block text-[#22231F] font-medium mb-1">Slug</label>
                 <input
                   type="text"
                   required
-                  value={formData.slug}
                   disabled={!!editingCollection}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
-                    }))
-                  }
-                  className="w-full bg-[#FAFBFB] border border-[#BABFC3] rounded px-3 py-1.5 text-[#202223] font-mono focus:outline-hidden disabled:cursor-not-allowed"
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F] font-mono focus:outline-hidden focus:border-[#85866A] disabled:bg-[#F7F5F0]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-[#202223] mb-1">Tagline</label>
+                <label className="block text-[#22231F] font-medium mb-1">Tagline</label>
                 <input
                   type="text"
+                  placeholder="e.g. Montessori-aligned foundational learning kits"
                   value={formData.tagline}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, tagline: e.target.value }))}
-                  className="w-full bg-white border border-[#BABFC3] rounded px-3 py-1.5 text-[#202223] focus:border-[#008060] focus:outline-hidden"
+                  onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
+                  className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F] focus:outline-hidden focus:border-[#85866A]"
                 />
               </div>
 
-              <div>
-                <label className="block font-semibold text-[#202223] mb-1">Description</label>
-                <textarea
-                  rows={3}
-                  value={formData.description}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                  className="w-full bg-white border border-[#BABFC3] rounded p-2 text-[#202223] focus:border-[#008060] focus:outline-hidden"
-                />
-              </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-[#E1E3E5]">
-                <button
+              <div className="flex items-center justify-end space-x-2 pt-4 border-t border-[#E8E5DD]">
+                <AdminButton
                   type="button"
+                  variant="secondary"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3 py-1.5 border border-[#BABFC3] rounded bg-white text-[#202223] font-semibold hover:bg-[#F6F6F7]"
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-4 py-1.5 bg-[#008060] hover:bg-[#006e52] text-white font-semibold rounded shadow-2xs disabled:opacity-50"
-                >
+                </AdminButton>
+                <AdminButton type="submit" variant="primary" disabled={isSubmitting}>
                   {isSubmitting ? "Saving..." : "Save Collection"}
-                </button>
+                </AdminButton>
               </div>
             </form>
           </div>

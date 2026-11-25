@@ -8,12 +8,14 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F6F6F7] text-[#202223] flex flex-col font-sans antialiased selection:bg-[#008060] selection:text-white">
+    <div className="min-h-screen bg-[#F7F5F0] text-[#22231F] flex flex-col font-sans antialiased selection:bg-[#85866A] selection:text-white">
+      {/* 256px Fixed Charcoal Studio Sidebar */}
       <AdminSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
-      <div className="flex-1 lg:pl-60 flex flex-col min-w-0">
+      {/* Main Content Pane */}
+      <div className="flex-1 lg:pl-64 flex flex-col min-w-0 transition-all duration-300">
         <AdminHeader onOpenMobile={() => setMobileOpen(true)} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1400px] w-full mx-auto">
+        <main className="flex-1 p-5 sm:p-8 lg:p-10 max-w-[1440px] w-full mx-auto space-y-8">
           {children}
         </main>
       </div>

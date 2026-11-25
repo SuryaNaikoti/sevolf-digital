@@ -5,14 +5,18 @@ import {
   CreditCard,
   ShieldCheck,
   Search,
-  Filter,
   RefreshCw,
-  AlertCircle,
   ExternalLink,
-  CheckCircle2,
-  Clock,
-  XCircle,
+  FlaskConical,
 } from "lucide-react";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminStatusBadge,
+  AdminButton,
+  AdminEmptyState,
+} from "@/components/admin/ui/AdminComponents";
+import { isTestTransaction, classifyTransactionEnvironment } from "@/lib/commerce/transactionClassifier";
 
 interface PaymentRecord {
   id: string;
@@ -60,6 +64,10 @@ export default function AdminPaymentsPage() {
     fetchPayments();
   }, []);
 
+  const isTestPayment = (p: PaymentRecord) => {
+    return isTestTransaction(p);
+  };
+
   const filteredPayments = payments.filter((p) => {
     const term = search.toLowerCase();
     return (
@@ -71,137 +79,100 @@ export default function AdminPaymentsPage() {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-[#202223] tracking-tight">Payments & Ledger</h1>
-          <p className="text-xs text-[#6D7175]">
-            Cryptographically verified gateway transactions, webhook receipts, and line-item captures.
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-2 shrink-0">
-          <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
-            HMAC-SHA256 Verification Active
-          </span>
-          <button
+      <AdminPageHeader
+        title="Payments & Ledger"
+        subtitle="Cryptographically verified gateway transactions, webhook receipts, and line-item captures."
+        badge={{ text: `${payments.length} Transactions`, variant: "neutral" }}
+        actions={
+          <AdminButton
+            variant="secondary"
+            icon={RefreshCw}
             onClick={fetchPayments}
-            className="flex items-center space-x-1 px-3 py-1 bg-white border border-[#BABFC3] rounded-md text-xs font-semibold text-[#202223] hover:bg-[#F6F6F7] shadow-2xs transition-colors"
+            disabled={loading}
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#6D7175] ${loading ? "animate-spin" : ""}`} />
-            <span>Refresh</span>
-          </button>
-        </div>
-      </div>
+            Refresh Ledger
+          </AdminButton>
+        }
+      />
 
-      {/* Ledger Card */}
-      <div className="bg-white border border-[#E1E3E5] rounded-lg overflow-hidden shadow-2xs">
-        <div className="p-3 bg-[#FAFBFB] border-b border-[#E1E3E5] flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* Main Table Card */}
+      <AdminCard padding={false}>
+        {/* Controls Bar */}
+        <div className="p-4 sm:p-5 border-b border-[#E8E5DD] flex items-center justify-between bg-[#FDFCFA]">
           <div className="relative w-full sm:w-80">
-            <Search className="w-3.5 h-3.5 text-[#8C9196] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-[#85847D] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
+              placeholder="Search by gateway ID, transaction ID, email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by transaction ID, order #, or email..."
-              className="w-full text-xs bg-white border border-[#BABFC3] rounded pl-8 pr-3 py-1.5 text-[#202223] placeholder-[#8C9196] focus:outline-hidden focus:border-[#202223]"
+              className="w-full text-xs font-sans bg-white border border-[#E8E5DD] rounded-md pl-8 pr-3 py-1.5 text-[#22231F] placeholder-[#85847D] focus:outline-hidden focus:border-[#85866A]"
             />
           </div>
-          <span className="text-xs text-[#6D7175] font-mono">
-            {filteredPayments.length} of {payments.length} ledger records
+          <span className="text-[11px] font-mono text-[#85847D] uppercase tracking-wider hidden sm:inline">
+            HMAC Verified Webhooks
           </span>
         </div>
 
-        {/* Content States */}
+        {/* Content Table or Empty State */}
         {loading ? (
-          <div className="p-16 text-center space-y-3">
-            <RefreshCw className="w-6 h-6 text-[#8C9196] animate-spin mx-auto" />
-            <p className="text-xs text-[#6D7175]">Loading payment ledger from database...</p>
-          </div>
-        ) : error ? (
-          <div className="p-12 text-center space-y-3">
-            <AlertCircle className="w-8 h-8 text-rose-600 mx-auto" />
-            <h3 className="text-sm font-semibold text-[#202223]">Unable to load payments</h3>
-            <p className="text-xs text-[#6D7175] max-w-sm mx-auto">{error}</p>
-            <button
-              onClick={fetchPayments}
-              className="px-3 py-1.5 bg-[#202223] text-white text-xs font-semibold rounded-md"
-            >
-              Retry
-            </button>
+          <div className="py-16 text-center text-xs text-[#85847D] font-mono">
+            Loading payment records from database...
           </div>
         ) : filteredPayments.length === 0 ? (
-          <div className="p-16 text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-[#F6F6F7] border border-[#E1E3E5] mx-auto flex items-center justify-center text-[#6D7175]">
-              <CreditCard className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-[#202223]">No payment transactions found</h3>
-              <p className="text-xs text-[#6D7175] max-w-sm mx-auto">
-                {search
-                  ? "No payments match the search criteria."
-                  : "Production payments remain safely disabled. When active checkout occurs, verified Razorpay payment receipts will be recorded here."}
-              </p>
-            </div>
-          </div>
+          <AdminEmptyState
+            icon={CreditCard}
+            title="No Payment Records"
+            description="Verified gateway captures and customer transactions will populate here once live payments are processed."
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-[#FAFBFB] text-[#6D7175] border-b border-[#E1E3E5] font-medium font-mono text-[11px]">
-                  <th className="py-2.5 px-4">Transaction ID</th>
-                  <th className="py-2.5 px-4">Gateway</th>
-                  <th className="py-2.5 px-4">Order #</th>
-                  <th className="py-2.5 px-4">Customer</th>
-                  <th className="py-2.5 px-4">Date</th>
-                  <th className="py-2.5 px-4">Status</th>
-                  <th className="py-2.5 px-4 text-right">Amount</th>
+                <tr className="border-b border-[#E8E5DD] bg-[#FAF8F5] text-[#85847D] font-mono uppercase text-[10px] tracking-wider">
+                  <th className="py-3 px-5">Transaction ID</th>
+                  <th className="py-3 px-5">Order #</th>
+                  <th className="py-3 px-5">Gateway</th>
+                  <th className="py-3 px-5">Environment</th>
+                  <th className="py-3 px-5">Status</th>
+                  <th className="py-3 px-5 text-right">Amount Captured</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E1E3E5]">
+              <tbody className="divide-y divide-[#E8E5DD]">
                 {filteredPayments.map((p) => {
-                  const isCaptured = p.status === "captured" || p.status === "paid";
+                  const isTest = isTestPayment(p);
                   return (
-                    <tr key={p.id} className="hover:bg-[#FAFBFB] transition-colors">
-                      <td className="py-3 px-4 font-mono font-medium text-[#202223]">
-                        {p.gateway_transaction_id || p.id.slice(0, 12)}
+                    <tr key={p.id} className="hover:bg-[#FAF8F5] transition-colors">
+                      <td className="py-3.5 px-5 font-mono text-[11px] text-[#22231F]">
+                        {p.gateway_transaction_id || p.id}
                       </td>
-                      <td className="py-3 px-4 uppercase font-mono text-[11px] text-[#6D7175]">
-                        {p.gateway || "Razorpay"}
+                      <td className="py-3.5 px-5 font-mono text-[#22231F]">
+                        {p.orders?.order_number || "—"}
                       </td>
-                      <td className="py-3 px-4 font-mono text-[#202223]">
-                        {p.orders?.order_number || (p.order_id ? p.order_id.slice(0, 8) : "—")}
+                      <td className="py-3.5 px-5 uppercase font-mono text-[11px] text-[#85847D]">
+                        {p.gateway}
                       </td>
-                      <td className="py-3 px-4 text-[#6D7175]">
-                        {p.orders?.customer_email || "Anonymous"}
+                      <td className="py-3.5 px-5">
+                        {isTest ? (
+                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-mono font-medium uppercase tracking-wider bg-[#FBF7F0] text-[#8C6D34] border border-[#EADFCB]">
+                            <FlaskConical className="w-3 h-3 text-[#8C6D34]" />
+                            <span>Test Mode</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium uppercase tracking-wider bg-[#F2F5F0] text-[#55694B] border border-[#D4DCCF]">
+                            Live
+                          </span>
+                        )}
                       </td>
-                      <td className="py-3 px-4 text-[#6D7175]">
-                        {new Date(p.created_at).toLocaleDateString()}
+                      <td className="py-3.5 px-5">
+                        <AdminStatusBadge variant={p.status === "captured" ? "success" : "warning"}>
+                          {p.status}
+                        </AdminStatusBadge>
                       </td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono ${
-                            isCaptured
-                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                              : "bg-amber-50 text-amber-800 border border-amber-200"
-                          }`}
-                        >
-                          {isCaptured ? (
-                            <>
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              <span>Captured</span>
-                            </>
-                          ) : (
-                            <>
-                              <Clock className="w-3 h-3 text-amber-600" />
-                              <span>{p.status}</span>
-                            </>
-                          )}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right font-mono font-semibold text-[#202223]">
-                        {p.currency} {Number(p.amount).toLocaleString()}
+                      <td className="py-3.5 px-5 text-right font-serif text-sm font-medium text-[#22231F]">
+                        ₹{p.amount}
                       </td>
                     </tr>
                   );
@@ -210,7 +181,7 @@ export default function AdminPaymentsPage() {
             </table>
           </div>
         )}
-      </div>
+      </AdminCard>
     </div>
   );
 }

@@ -4,14 +4,18 @@ import React, { useEffect, useState } from "react";
 import {
   Users,
   Search,
-  Filter,
+  RefreshCw,
   Mail,
   Shield,
-  RefreshCw,
-  AlertCircle,
-  Calendar,
   ShoppingBag,
 } from "lucide-react";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminStatusBadge,
+  AdminButton,
+  AdminEmptyState,
+} from "@/components/admin/ui/AdminComponents";
 
 interface CustomerRecord {
   id: string;
@@ -39,12 +43,12 @@ export default function AdminCustomersPage() {
     try {
       const res = await fetch("/api/admin/customers");
       if (!res.ok) {
-        throw new Error(`Failed to load customers: HTTP ${res.status}`);
+        throw new Error(`Failed to load patrons: HTTP ${res.status}`);
       }
       const data = await res.json();
       setCustomers(data.customers || []);
     } catch (err: any) {
-      setError(err?.message || "An unexpected error occurred loading customer directory.");
+      setError(err?.message || "An unexpected error occurred loading patron directory.");
     } finally {
       setLoading(false);
     }
@@ -64,116 +68,86 @@ export default function AdminCustomersPage() {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-[#202223] tracking-tight">Customers</h1>
-          <p className="text-xs text-[#6D7175]">
-            Registered customer accounts, lifetime purchase totals, and patron directory.
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-2 shrink-0">
-          <button
+      <AdminPageHeader
+        title="Patrons & Accounts"
+        subtitle="Registered customer accounts, verified orders, and customer lifetime value."
+        badge={{ text: `${customers.length} Patrons`, variant: "neutral" }}
+        actions={
+          <AdminButton
+            variant="secondary"
+            icon={RefreshCw}
             onClick={fetchCustomers}
-            className="flex items-center space-x-1.5 px-3 py-1.5 border border-[#BABFC3] bg-white text-[#202223] text-xs font-semibold rounded-md shadow-2xs hover:bg-[#F6F6F7] transition-colors"
+            disabled={loading}
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#6D7175] ${loading ? "animate-spin" : ""}`} />
-            <span>Refresh</span>
-          </button>
-        </div>
-      </div>
+            Refresh Directory
+          </AdminButton>
+        }
+      />
 
-      {/* Customer Registry Card */}
-      <div className="bg-white border border-[#E1E3E5] rounded-lg overflow-hidden shadow-2xs">
-        <div className="p-3 bg-[#FAFBFB] border-b border-[#E1E3E5] flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* Main Table Card */}
+      <AdminCard padding={false}>
+        {/* Search Bar */}
+        <div className="p-4 sm:p-5 border-b border-[#E8E5DD] flex items-center justify-between bg-[#FDFCFA]">
           <div className="relative w-full sm:w-80">
-            <Search className="w-3.5 h-3.5 text-[#8C9196] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-[#85847D] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
+              placeholder="Search patrons by name, email, country..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search customers by name, email, or region..."
-              className="w-full text-xs bg-white border border-[#BABFC3] rounded pl-8 pr-3 py-1.5 text-[#202223] placeholder-[#8C9196] focus:outline-hidden focus:border-[#202223]"
+              className="w-full text-xs font-sans bg-white border border-[#E8E5DD] rounded-md pl-8 pr-3 py-1.5 text-[#22231F] placeholder-[#85847D] focus:outline-hidden focus:border-[#85866A]"
             />
           </div>
-          <span className="text-xs text-[#6D7175] font-mono">
-            {filteredCustomers.length} registered profiles
+          <span className="text-[11px] font-mono text-[#85847D] uppercase tracking-wider hidden sm:inline">
+            Active Directory
           </span>
         </div>
 
-        {/* Content States */}
+        {/* Content Table or Empty State */}
         {loading ? (
-          <div className="p-16 text-center space-y-3">
-            <RefreshCw className="w-6 h-6 text-[#8C9196] animate-spin mx-auto" />
-            <p className="text-xs text-[#6D7175]">Loading registered customers from database...</p>
-          </div>
-        ) : error ? (
-          <div className="p-12 text-center space-y-3">
-            <AlertCircle className="w-8 h-8 text-rose-600 mx-auto" />
-            <h3 className="text-sm font-semibold text-[#202223]">Unable to load customers</h3>
-            <p className="text-xs text-[#6D7175] max-w-sm mx-auto">{error}</p>
-            <button
-              onClick={fetchCustomers}
-              className="px-3 py-1.5 bg-[#202223] text-white text-xs font-semibold rounded-md"
-            >
-              Retry
-            </button>
+          <div className="py-16 text-center text-xs text-[#85847D] font-mono">
+            Loading patron directory from database...
           </div>
         ) : filteredCustomers.length === 0 ? (
-          <div className="p-16 text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-[#F6F6F7] border border-[#E1E3E5] mx-auto flex items-center justify-center text-[#6D7175]">
-              <Users className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-[#202223]">No customers registered</h3>
-              <p className="text-xs text-[#6D7175] max-w-sm mx-auto">
-                Customer profiles and purchase records will automatically populate here upon customer registration or checkout.
-              </p>
-            </div>
-          </div>
+          <AdminEmptyState
+            icon={Users}
+            title="No Patrons Found"
+            description="No customer accounts match your search query. Registered customers will appear here."
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-[#FAFBFB] text-[#6D7175] border-b border-[#E1E3E5] font-medium font-mono text-[11px]">
-                  <th className="py-2.5 px-4">Customer Name</th>
-                  <th className="py-2.5 px-4">Email</th>
-                  <th className="py-2.5 px-4">Role</th>
-                  <th className="py-2.5 px-4">Orders</th>
-                  <th className="py-2.5 px-4">Total Spent</th>
-                  <th className="py-2.5 px-4">Country</th>
-                  <th className="py-2.5 px-4 text-right">Joined</th>
+                <tr className="border-b border-[#E8E5DD] bg-[#FAF8F5] text-[#85847D] font-mono uppercase text-[10px] tracking-wider">
+                  <th className="py-3 px-5">Patron</th>
+                  <th className="py-3 px-5">Account Role</th>
+                  <th className="py-3 px-5">Orders</th>
+                  <th className="py-3 px-5">Country</th>
+                  <th className="py-3 px-5 text-right">Lifetime Total</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E1E3E5]">
+              <tbody className="divide-y divide-[#E8E5DD]">
                 {filteredCustomers.map((c) => (
-                  <tr key={c.id} className="hover:bg-[#FAFBFB] transition-colors">
-                    <td className="py-3 px-4 font-medium text-[#202223]">
-                      {c.fullName}
+                  <tr key={c.id} className="hover:bg-[#FAF8F5] transition-colors">
+                    <td className="py-3.5 px-5">
+                      <p className="font-medium text-[#22231F]">{c.fullName || "Patron"}</p>
+                      <p className="text-[11px] text-[#85847D] font-mono">{c.email}</p>
                     </td>
-                    <td className="py-3 px-4 font-mono text-[#6D7175]">
-                      {c.email}
+                    <td className="py-3.5 px-5">
+                      <AdminStatusBadge variant={c.role === "admin" ? "accent" : "neutral"}>
+                        {c.role || "Customer"}
+                      </AdminStatusBadge>
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-[#F6F6F7] text-[#6D7175] border border-[#E1E3E5]">
-                        {c.role}
-                      </span>
+                    <td className="py-3.5 px-5 font-mono text-[11px] text-[#22231F]">
+                      {c.paidOrdersCount} Paid ({c.ordersCount} Total)
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="font-mono text-[#202223] font-medium">
-                        {c.paidOrdersCount} paid ({c.ordersCount} total)
-                      </span>
+                    <td className="py-3.5 px-5 font-sans text-[#85847D]">
+                      {c.country || "India (IN)"}
                     </td>
-                    <td className="py-3 px-4 font-mono font-semibold text-[#202223]">
-                      {c.currency} {Number(c.totalSpent).toLocaleString()}
-                    </td>
-                    <td className="py-3 px-4 text-[#6D7175]">
-                      {c.country}
-                    </td>
-                    <td className="py-3 px-4 text-right text-[#6D7175]">
-                      {new Date(c.createdAt).toLocaleDateString()}
+                    <td className="py-3.5 px-5 text-right font-serif text-sm font-medium text-[#22231F]">
+                      ₹{c.totalSpent.toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -181,7 +155,7 @@ export default function AdminCustomersPage() {
             </table>
           </div>
         )}
-      </div>
+      </AdminCard>
     </div>
   );
 }
