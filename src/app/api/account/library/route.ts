@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { decryptTokenPayload } from "@/services/security/tokenEncryption";
 
 export async function GET(request: Request) {
   try {
@@ -93,6 +94,39 @@ export async function GET(request: Request) {
       .or(`user_id.eq.${user.id},customer_email.eq.${user.email.toLowerCase()}`)
       .order("created_at", { ascending: false });
 
+    // 3. For entitlements where token is not stored in plaintext in DB (Phase 1C security),
+    // resolve bearer tokens from the encrypted delivery outbox for this authenticated customer
+    const entitlementIds = (entitlements || []).map((e: any) => e.id);
+    let tokenMap = new Map<string, string>();
+
+    if (entitlementIds.length > 0) {
+      const { data: outboxRows } = await adminClient
+        .from("order_delivery_outbox")
+        .select("entitlement_id, encrypted_token_payload")
+        .in("entitlement_id", entitlementIds);
+
+      if (outboxRows && outboxRows.length > 0) {
+        for (const row of outboxRows) {
+          if (row.encrypted_token_payload) {
+            try {
+              const raw = decryptTokenPayload(row.encrypted_token_payload);
+              tokenMap.set(row.entitlement_id, raw);
+            } catch (decErr) {
+              console.error("[Account Library] Decryption error for entitlement:", row.entitlement_id, decErr);
+            }
+          }
+        }
+      }
+    }
+
+    const enrichedEntitlements = (entitlements || []).map((item: any) => {
+      const bearerToken = item.token || tokenMap.get(item.id) || null;
+      return {
+        ...item,
+        token: bearerToken,
+      };
+    });
+
     return NextResponse.json({
       authenticated: true,
       user: {
@@ -100,7 +134,7 @@ export async function GET(request: Request) {
         email: user.email,
       },
       orders: orders || [],
-      entitlements: entitlements || [],
+      entitlements: enrichedEntitlements,
     });
   } catch (err: any) {
     return NextResponse.json(
