@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { decryptTokenPayload } from "@/services/security/tokenEncryption";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -63,6 +64,31 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Order not found." }, { status: 404 });
     }
 
+    // Resolve encrypted outbox tokens for instant confirmation downloads
+    const entitlements = order.download_entitlements || [];
+    const entitlementIds = entitlements.map((e: any) => e.id);
+    const tokenMap = new Map<string, string>();
+
+    if (entitlementIds.length > 0) {
+      const { data: outboxRows } = await adminClient
+        .from("order_delivery_outbox")
+        .select("entitlement_id, encrypted_token_payload")
+        .in("entitlement_id", entitlementIds);
+
+      if (outboxRows && outboxRows.length > 0) {
+        for (const row of outboxRows) {
+          if (row.encrypted_token_payload) {
+            try {
+              const raw = decryptTokenPayload(row.encrypted_token_payload);
+              tokenMap.set(row.entitlement_id, raw);
+            } catch (decErr) {
+              console.error("[Orders API] Decryption error for entitlement:", row.entitlement_id, decErr);
+            }
+          }
+        }
+      }
+    }
+
     return NextResponse.json({
       order: {
         id: order.id,
@@ -75,7 +101,7 @@ export async function GET(request: Request) {
         paymentStatus: order.payment_status,
         createdAt: order.created_at,
         items: order.order_items || [],
-        entitlements: (order.download_entitlements || []).map((e: any) => ({
+        entitlements: entitlements.map((e: any) => ({
           id: e.id,
           downloadCount: e.download_count,
           downloadLimit: e.download_limit,
@@ -83,8 +109,7 @@ export async function GET(request: Request) {
           fileName: e.digital_assets?.file_name || "Digital Product Asset",
           fileSizeBytes: e.digital_assets?.file_size_bytes || 0,
           mimeType: e.digital_assets?.mime_type || "application/octet-stream",
-          // Return token for instant confirmation access if stored
-          token: e.token || null,
+          token: e.token || tokenMap.get(e.id) || null,
         })),
       },
     });

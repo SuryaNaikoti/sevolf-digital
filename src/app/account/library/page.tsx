@@ -60,7 +60,9 @@ export default function DigitalLibraryPage() {
             const asset = item.digital_assets;
             const product = asset?.products;
             const order = item.orders;
-            const isUsable = item.is_active && !item.is_revoked;
+            const isExpired = item.expires_at && new Date(item.expires_at) < new Date();
+            const isLimitReached = item.download_limit !== null && item.download_count >= item.download_limit;
+            const isUsable = item.is_active && !item.is_revoked && !isExpired && !isLimitReached;
 
             return (
               <div
@@ -99,9 +101,21 @@ export default function DigitalLibraryPage() {
                       <Download className="w-3.5 h-3.5" />
                       <span>Download File</span>
                     </a>
-                  ) : (
+                  ) : item.is_revoked ? (
+                    <span className="px-4 py-2 bg-red-50 text-red-800 border border-red-200 text-xs rounded-xs">
+                      Entitlement Revoked
+                    </span>
+                  ) : isLimitReached ? (
                     <span className="px-4 py-2 bg-amber-50 text-amber-800 border border-amber-200 text-xs rounded-xs">
-                      {item.is_revoked ? "Entitlement Revoked" : "Link Expired (Check Email)"}
+                      Download Limit Reached
+                    </span>
+                  ) : isExpired ? (
+                    <span className="px-4 py-2 bg-amber-50 text-amber-800 border border-amber-200 text-xs rounded-xs">
+                      License Expired (Contact Support)
+                    </span>
+                  ) : (
+                    <span className="px-4 py-2 bg-[#EAE5DA] text-[#77766E] border border-[#DDD8CD] text-xs rounded-xs">
+                      Processing Delivery (Check Email)
                     </span>
                   )}
                 </div>
