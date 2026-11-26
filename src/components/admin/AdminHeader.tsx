@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Bell, HelpCircle, Menu, ChevronRight, Sparkles, X } from "lucide-react";
+import { Search, Bell, HelpCircle, Menu, ChevronRight, Sparkles, X, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,7 +11,7 @@ interface AdminHeaderProps {
   onToggleCollapse?: () => void;
 }
 
-export function AdminHeader({ onOpenMobile }: AdminHeaderProps) {
+export function AdminHeader({ onOpenMobile, collapsed = false, onToggleCollapse }: AdminHeaderProps) {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,6 +38,16 @@ export function AdminHeader({ onOpenMobile }: AdminHeaderProps) {
             aria-label="Open navigation menu"
           >
             <Menu className="w-5 h-5" />
+          </button>
+        )}
+        {onToggleCollapse && (
+          <button
+            onClick={onToggleCollapse}
+            className="hidden lg:flex p-1.5 -ml-1 rounded text-[#85847D] hover:text-[#22231F] hover:bg-[#F7F5F0] transition-colors cursor-pointer"
+            aria-label={collapsed ? "Open sidebar" : "Close sidebar"}
+            title={collapsed ? "Open sidebar" : "Close sidebar"}
+          >
+            {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
         )}
 

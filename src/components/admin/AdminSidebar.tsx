@@ -134,7 +134,8 @@ export function AdminSidebar({
       <aside
         className={`fixed top-0 bottom-0 left-0 z-50 bg-[#20211F] text-[#D8D6CE] flex flex-col transition-all duration-300 ease-in-out border-r border-[#2C2D2A]
           ${collapsed ? "w-18" : "w-64"}
-          ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+          ${collapsed ? "lg:-translate-x-full" : "lg:translate-x-0"}
         `}
       >
         {/* Top Studio Brand Header */}
