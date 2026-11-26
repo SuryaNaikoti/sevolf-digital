@@ -1,5 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decryptTokenPayload } from "@/services/security/tokenEncryption";
+import { buildPurchaseEmailPayload } from "@/services/email/purchaseEmailService";
+import { buildPurchaseDeliveryEmailHtml } from "@/services/email/purchaseEmailTemplate";
 
 export interface OutboxDeliveryJob {
   job_id: string;
@@ -20,7 +22,8 @@ export interface WorkerBatchResult {
  * Strictly verifies Resend configuration.
  */
 async function sendDeliveryEmail(
-  customerEmail: string,
+  supabase: ReturnType<typeof createAdminClient>,
+  job: OutboxDeliveryJob,
   rawToken: string,
   siteUrl: string
 ): Promise<{ success: boolean; error?: string }> {
@@ -33,7 +36,22 @@ async function sendDeliveryEmail(
     };
   }
 
-  const downloadUrl = `${siteUrl}/api/download/${rawToken}`;
+  // Resolve entitlement_id for this outbox job
+  const { data: outboxRow } = await supabase
+    .from("order_delivery_outbox")
+    .select("entitlement_id")
+    .eq("id", job.job_id)
+    .maybeSingle();
+
+  const { data: emailData, attachments } = await buildPurchaseEmailPayload(
+    supabase,
+    job.order_id,
+    outboxRow?.entitlement_id || null,
+    rawToken,
+    siteUrl
+  );
+
+  const html = buildPurchaseDeliveryEmailHtml(emailData);
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -48,16 +66,10 @@ async function sendDeliveryEmail(
           process.env.NEXT_PUBLIC_SUPPORT_EMAIL ||
           "SEVOLF Digital <support@sevolf.shop>",
         reply_to: "support@sevolf.shop",
-        to: customerEmail,
-        subject: "Your SEVOLF Digital Download is Ready",
-        html: `
-          <div style="font-family: sans-serif; padding: 20px;">
-            <h2>Thank you for your purchase!</h2>
-            <p>Your digital product is ready for instant download.</p>
-            <p><a href="${downloadUrl}" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 4px;">Download Your File</a></p>
-            <p style="color: #666; font-size: 12px;">This link is valid for 30 days and allows up to 10 downloads.</p>
-          </div>
-        `,
+        to: job.customer_email,
+        subject: `Your SEVOLF Digital Order ${emailData.orderNumber} is Ready`,
+        html,
+        ...(attachments.length > 0 ? { attachments } : {}),
       }),
     });
 
@@ -101,7 +113,7 @@ export async function processOutboxBatch(
       const rawToken = decryptTokenPayload(job.encrypted_token_payload);
 
       // 3. Dispatch transactional email
-      const result = await sendDeliveryEmail(job.customer_email, rawToken, siteUrl);
+      const result = await sendDeliveryEmail(supabase, job, rawToken, siteUrl);
 
       if (result.success) {
         // 4. Mark job completed with lease token ownership validation
