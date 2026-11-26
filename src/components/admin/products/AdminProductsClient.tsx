@@ -347,7 +347,7 @@ export default function AdminProductsClient({ initialProducts }: AdminProductsCl
                           <Edit className="w-3.5 h-3.5" />
                         </Link>
                         <Link
-                          href={`/products/${p.slug}`}
+                          href={`/products/${p.slug}?preview=1`}
                           target="_blank"
                           className="p-1.5 rounded hover:bg-[#F7F5F0] text-[#85847D] hover:text-[#22231F] transition-colors"
                           title="Preview on Storefront"

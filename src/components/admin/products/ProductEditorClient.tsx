@@ -320,7 +320,7 @@ export default function ProductEditorClient({ product }: ProductEditorClientProp
 
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            href={`/products/${product.slug}`}
+            href={`/products/${product.slug}?preview=1`}
             target="_blank"
             className="px-3.5 py-2 bg-white border border-[#DDD8CD] text-[#292B27] text-xs font-medium rounded-xs hover:bg-[#F5F2EB] flex items-center space-x-1.5"
           >
