@@ -18,15 +18,18 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getAdminProducts } from "@/services/admin/products";
-import { LAUNCH_READINESS_CHECKLIST } from "@/services/admin/readiness";
+import { getLaunchReadinessChecklist } from "@/services/admin/readiness";
 import { AdminCard, AdminStatusBadge, AdminButton } from "@/components/admin/ui/AdminComponents";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isLiveTransaction, isTestTransaction } from "@/lib/commerce/transactionClassifier";
 
 export default async function AdminOverviewPage() {
-  const products = await getAdminProducts();
-  const readyCount = LAUNCH_READINESS_CHECKLIST.filter((i) => i.status === "ready").length;
-  const totalCount = LAUNCH_READINESS_CHECKLIST.length;
+  const [products, readinessChecklist] = await Promise.all([
+    getAdminProducts(),
+    getLaunchReadinessChecklist(),
+  ]);
+  const readyCount = readinessChecklist.filter((i) => i.status === "ready").length;
+  const totalCount = readinessChecklist.length;
 
   // Real query from database via privileged admin client
   const supabase = createAdminClient();

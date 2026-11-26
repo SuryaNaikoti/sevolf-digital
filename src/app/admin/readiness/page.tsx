@@ -1,4 +1,4 @@
-import { LAUNCH_READINESS_CHECKLIST, LaunchReadinessItem } from "@/services/admin/readiness";
+import { getLaunchReadinessChecklist, LaunchReadinessItem } from "@/services/admin/readiness";
 import {
   CheckCircle2,
   AlertCircle,
@@ -16,9 +16,12 @@ import {
   AdminButton,
 } from "@/components/admin/ui/AdminComponents";
 
-export default function LaunchReadinessPage() {
-  const readyCount = LAUNCH_READINESS_CHECKLIST.filter((i) => i.status === "ready").length;
-  const totalCount = LAUNCH_READINESS_CHECKLIST.length;
+export const dynamic = "force-dynamic";
+
+export default async function LaunchReadinessPage() {
+  const checklist = await getLaunchReadinessChecklist();
+  const readyCount = checklist.filter((i) => i.status === "ready").length;
+  const totalCount = checklist.length;
   const isReady = readyCount === totalCount;
 
   return (
@@ -90,7 +93,7 @@ export default function LaunchReadinessPage() {
         padding={false}
       >
         <div className="divide-y divide-[#E8E5DD]">
-          {LAUNCH_READINESS_CHECKLIST.map((item) => (
+          {checklist.map((item) => (
             <div
               key={item.id}
               className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#FAF8F5] transition-colors"

@@ -46,10 +46,25 @@ export default function AdminProductsClient({ initialProducts }: AdminProductsCl
     slug: "",
     tagline: "",
     short_description: "",
+    full_description: "",
     product_type: "Digital Workbook",
     format: "pdf",
     format_label: "PDF (Print-Ready)",
+    tags: "digital, workbook",
+    cover_image_url: "/images/products/home-reset-kit/cover.jpg",
+    price: "499",
+    currency: "INR" as "INR" | "USD" | "GBP" | "EUR",
+    compare_at_amount: "",
+    is_price_active: true,
+    seo_title: "",
+    seo_description: "",
+    status: "draft" as "draft" | "published",
   });
+  const [uploadedAssets, setUploadedAssets] = useState<
+    Array<{ file_name: string; storage_path: string; file_size_bytes: number; mime_type: string; file_version: string }>
+  >([]);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
 
   // Filtered Products
   const filteredProducts = products.filter((p) => {
@@ -108,23 +123,64 @@ export default function AdminProductsClient({ initialProducts }: AdminProductsCl
       const res = await fetch("/api/admin/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProduct),
+        body: JSON.stringify({
+          name: newProduct.name,
+          slug: newProduct.slug,
+          tagline: newProduct.tagline,
+          short_description: newProduct.short_description,
+          full_description: newProduct.full_description,
+          product_type: newProduct.product_type,
+          format: newProduct.format,
+          format_label: newProduct.format_label,
+          cover_image_url: newProduct.cover_image_url,
+          tags: newProduct.tags.split(",").map((t) => t.trim()).filter(Boolean),
+          price: newProduct.price ? Number(newProduct.price) : undefined,
+          currency: newProduct.currency,
+          compare_at_amount: newProduct.compare_at_amount ? Number(newProduct.compare_at_amount) : null,
+          is_price_active: newProduct.is_price_active,
+          seo_title: newProduct.seo_title || newProduct.name,
+          seo_description: newProduct.seo_description || newProduct.short_description,
+          status: "draft",
+        }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to create product");
 
-      setFeedback({ type: "success", message: `Product "${data.product.name}" created in draft status!` });
+      // Register any uploaded digital assets against the newly created product
+      for (const asset of uploadedAssets) {
+        await fetch("/api/admin/assets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...asset,
+            product_id: data.product.id,
+          }),
+        });
+      }
+
+      // If user requested Publish and conditions are met, transition status
+      if (newProduct.status === "published") {
+        const pubRes = await fetch(`/api/admin/products/${data.product.slug}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "published" }),
+        });
+        if (!pubRes.ok) {
+          const pubErr = await pubRes.json();
+          setFeedback({
+            type: "error",
+            message: `Product saved as Draft, but could not publish: ${pubErr.error}`,
+          });
+        } else {
+          setFeedback({ type: "success", message: `Product "${data.product.name}" created and published!` });
+        }
+      } else {
+        setFeedback({ type: "success", message: `Product "${data.product.name}" created in draft status!` });
+      }
+
       setIsAddModalOpen(false);
-      setNewProduct({
-        name: "",
-        slug: "",
-        tagline: "",
-        short_description: "",
-        product_type: "Digital Workbook",
-        format: "pdf",
-        format_label: "PDF (Print-Ready)",
-      });
+      setUploadedAssets([]);
       router.refresh();
     } catch (err: any) {
       setFeedback({ type: "error", message: err.message });
@@ -311,12 +367,13 @@ export default function AdminProductsClient({ initialProducts }: AdminProductsCl
       {/* Add Product Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-[#161715]/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-[#E8E5DD] rounded-xl max-w-lg w-full overflow-hidden shadow-xl animate-in fade-in zoom-in-95">
-            <div className="px-6 py-4 border-b border-[#E8E5DD] flex items-center justify-between bg-[#FDFCFA]">
+          <div className="bg-white border border-[#E8E5DD] rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-xl animate-in fade-in zoom-in-95">
+            <div className="px-6 py-4 border-b border-[#E8E5DD] flex items-center justify-between bg-[#FDFCFA] shrink-0">
               <h2 className="text-base font-serif font-normal text-[#22231F]">
                 Create Studio Product
               </h2>
               <button
+                type="button"
                 onClick={() => setIsAddModalOpen(false)}
                 className="p-1.5 rounded-md text-[#85847D] hover:text-[#22231F]"
               >
@@ -324,46 +381,239 @@ export default function AdminProductsClient({ initialProducts }: AdminProductsCl
               </button>
             </div>
 
-            <form onSubmit={handleCreateProduct} className="p-6 space-y-4 text-xs font-sans">
-              <div>
-                <label className="block text-[#22231F] font-medium mb-1">Product Title</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Toddler Routine Cards & Visual Schedule"
-                  value={newProduct.name}
-                  onChange={(e) => {
-                    const name = e.target.value;
-                    const slug = name
-                      .toLowerCase()
-                      .replace(/[^a-z0-9]+/g, "-")
-                      .replace(/(^-|-$)+/g, "");
-                    setNewProduct({ ...newProduct, name, slug });
-                  }}
-                  className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F] focus:outline-hidden focus:border-[#85866A]"
-                />
+            <form onSubmit={handleCreateProduct} className="p-6 space-y-5 text-xs font-sans overflow-y-auto">
+              {/* A. Basic Information */}
+              <div className="space-y-3">
+                <h3 className="font-mono uppercase text-[10px] tracking-wider text-[#85847D] border-b border-[#E8E5DD] pb-1">
+                  A. Basic Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Product Title *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Toddler Routine Cards"
+                      value={newProduct.name}
+                      onChange={(e) => {
+                        const name = e.target.value;
+                        const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+                        setNewProduct({ ...newProduct, name, slug });
+                      }}
+                      className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">URL Slug *</label>
+                    <input
+                      type="text"
+                      required
+                      value={newProduct.slug}
+                      onChange={(e) => setNewProduct({ ...newProduct, slug: e.target.value })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F] font-mono"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[#22231F] font-medium mb-1">Tagline</label>
+                  <input
+                    type="text"
+                    value={newProduct.tagline}
+                    onChange={(e) => setNewProduct({ ...newProduct, tagline: e.target.value })}
+                    className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#22231F] font-medium mb-1">Short Description</label>
+                  <textarea
+                    rows={2}
+                    value={newProduct.short_description}
+                    onChange={(e) => setNewProduct({ ...newProduct, short_description: e.target.value })}
+                    className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F]"
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Product Type</label>
+                    <input
+                      type="text"
+                      value={newProduct.product_type}
+                      onChange={(e) => setNewProduct({ ...newProduct, product_type: e.target.value })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Format Label</label>
+                    <input
+                      type="text"
+                      value={newProduct.format_label}
+                      onChange={(e) => setNewProduct({ ...newProduct, format_label: e.target.value })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F]"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-[#22231F] font-medium mb-1">URL Handle (Slug)</label>
-                <input
-                  type="text"
-                  required
-                  value={newProduct.slug}
-                  onChange={(e) => setNewProduct({ ...newProduct, slug: e.target.value })}
-                  className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F] font-mono focus:outline-hidden focus:border-[#85866A]"
-                />
+              {/* B. Classification & F. SEO */}
+              <div className="space-y-3">
+                <h3 className="font-mono uppercase text-[10px] tracking-wider text-[#85847D] border-b border-[#E8E5DD] pb-1">
+                  B. Classification & F. SEO
+                </h3>
+                <div>
+                  <label className="block text-[#22231F] font-medium mb-1">Tags (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={newProduct.tags}
+                    onChange={(e) => setNewProduct({ ...newProduct, tags: e.target.value })}
+                    className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F]"
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">SEO Page Title</label>
+                    <input
+                      type="text"
+                      value={newProduct.seo_title}
+                      onChange={(e) => setNewProduct({ ...newProduct, seo_title: e.target.value })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">SEO Meta Description</label>
+                    <input
+                      type="text"
+                      value={newProduct.seo_description}
+                      onChange={(e) => setNewProduct({ ...newProduct, seo_description: e.target.value })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F]"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-[#22231F] font-medium mb-1">Tagline</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Visual daily routines for independent children"
-                  value={newProduct.tagline}
-                  onChange={(e) => setNewProduct({ ...newProduct, tagline: e.target.value })}
-                  className="w-full border border-[#E8E5DD] rounded-md px-3 py-2 text-[#22231F] focus:outline-hidden focus:border-[#85866A]"
-                />
+              {/* C. Product Media & D. Digital Assets */}
+              <div className="space-y-3">
+                <h3 className="font-mono uppercase text-[10px] tracking-wider text-[#85847D] border-b border-[#E8E5DD] pb-1">
+                  C. Cover Media & D. Digital Assets
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Cover Image</label>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      disabled={isUploadingMedia}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setIsUploadingMedia(true);
+                        const fd = new FormData();
+                        fd.append("file", file);
+                        fd.append("purpose", "cover");
+                        fd.append("product_slug", newProduct.slug || "new-product");
+                        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+                        const d = await res.json();
+                        if (res.ok && d.public_url) {
+                          setNewProduct((prev) => ({ ...prev, cover_image_url: d.public_url }));
+                        }
+                        setIsUploadingMedia(false);
+                      }}
+                      className="w-full text-[11px] border border-[#E8E5DD] rounded-md p-1.5"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Digital Asset (PDF/ZIP)</label>
+                    <input
+                      type="file"
+                      accept=".pdf,.zip,.epub"
+                      disabled={isUploadingFile}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setIsUploadingFile(true);
+                        const fd = new FormData();
+                        fd.append("file", file);
+                        fd.append("purpose", "digital_asset");
+                        fd.append("product_slug", newProduct.slug || "new-product");
+                        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+                        const d = await res.json();
+                        if (res.ok) {
+                          setUploadedAssets((prev) => [
+                            ...prev,
+                            {
+                              file_name: d.file_name,
+                              storage_path: d.storage_path,
+                              file_size_bytes: d.file_size_bytes,
+                              mime_type: d.mime_type,
+                              file_version: "v1.0.0",
+                            },
+                          ]);
+                        }
+                        setIsUploadingFile(false);
+                      }}
+                      className="w-full text-[11px] border border-[#E8E5DD] rounded-md p-1.5"
+                    />
+                    {uploadedAssets.length > 0 && (
+                      <p className="text-[11px] text-emerald-700 mt-1">
+                        {uploadedAssets.length} file(s) staged for attachment.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* E. Pricing & G. Publishing */}
+              <div className="space-y-3">
+                <h3 className="font-mono uppercase text-[10px] tracking-wider text-[#85847D] border-b border-[#E8E5DD] pb-1">
+                  E. Pricing & G. Publishing
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Currency</label>
+                    <select
+                      value={newProduct.currency}
+                      onChange={(e) => setNewProduct({ ...newProduct, currency: e.target.value as any })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-2.5 py-2"
+                    >
+                      <option value="INR">INR</option>
+                      <option value="USD">USD</option>
+                      <option value="GBP">GBP</option>
+                      <option value="EUR">EUR</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Base Price</label>
+                    <input
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      value={newProduct.price}
+                      onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-2.5 py-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Compare-at</label>
+                    <input
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      value={newProduct.compare_at_amount}
+                      onChange={(e) => setNewProduct({ ...newProduct, compare_at_amount: e.target.value })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-2.5 py-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#22231F] font-medium mb-1">Initial Status</label>
+                    <select
+                      value={newProduct.status}
+                      onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value as any })}
+                      className="w-full border border-[#E8E5DD] rounded-md px-2.5 py-2"
+                    >
+                      <option value="draft">Save as Draft</option>
+                      <option value="published">Publish Immediately</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center justify-end space-x-2 pt-4 border-t border-[#E8E5DD]">
@@ -374,8 +624,8 @@ export default function AdminProductsClient({ initialProducts }: AdminProductsCl
                 >
                   Cancel
                 </AdminButton>
-                <AdminButton type="submit" variant="primary" disabled={isSubmitting}>
-                  {isSubmitting ? "Creating..." : "Save Product (Draft)"}
+                <AdminButton type="submit" variant="primary" disabled={isSubmitting || isUploadingMedia || isUploadingFile}>
+                  {isSubmitting ? "Saving..." : newProduct.status === "published" ? "Create & Publish" : "Save as Draft"}
                 </AdminButton>
               </div>
             </form>
