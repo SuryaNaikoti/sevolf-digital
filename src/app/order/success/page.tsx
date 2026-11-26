@@ -24,6 +24,7 @@ interface OrderDetail {
   totalAmount: number;
   status: string;
   paymentStatus: string;
+  emailDeliveryStatus?: "queued" | "delivered" | "failed";
   items: any[];
   entitlements: {
     id: string;
@@ -172,7 +173,13 @@ export default function OrderSuccessPage() {
 
               <div className="flex items-start gap-3 text-xs text-[#292B27] pt-2 border-t border-[#DDD8CD]">
                 <Mail className="w-4 h-4 text-[#657052] flex-shrink-0 mt-0.5" />
-                <span>An automated confirmation email has been scheduled. Your direct download links remain valid for 30 days and permit up to 10 downloads.</span>
+                <span>
+                  {order.emailDeliveryStatus === "delivered"
+                    ? "Your confirmation email has been accepted by our email provider. Your direct download links remain valid for 30 days and permit up to 10 downloads."
+                    : order.emailDeliveryStatus === "failed"
+                    ? "We could not send your confirmation email automatically, but your instant download links above are ready to use."
+                    : "Your confirmation email is queued for delivery. Your direct download links remain valid for 30 days and permit up to 10 downloads."}
+                </span>
               </div>
             </div>
 
