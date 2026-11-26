@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getEncryptionKey } from "@/services/security/tokenEncryption";
 
 export interface LaunchReadinessItem {
   id: string;
@@ -26,13 +27,19 @@ export async function getLaunchReadinessChecklist(): Promise<LaunchReadinessItem
   const rzpSecret = process.env.RAZORPAY_KEY_SECRET || "";
   const rzpWebhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || "";
   const resendKey = process.env.RESEND_API_KEY || "";
-  const tokenEncKey = process.env.TOKEN_ENCRYPTION_KEY || "";
 
   const isLiveRzp = rzpKey.startsWith("rzp_live_") && rzpSecret.length > 0 && !rzpSecret.includes("your_");
   const isTestRzp = rzpKey.startsWith("rzp_test_") && rzpSecret.length > 0;
   const isWebhookReady = rzpWebhookSecret.length > 0 && !rzpWebhookSecret.includes("your_");
   const isEmailReady = resendKey.length > 0 && !resendKey.includes("your_");
-  const isTokenKeyReady = tokenEncKey.length >= 32;
+
+  let isTokenKeyReady = false;
+  try {
+    getEncryptionKey("v1");
+    isTokenKeyReady = true;
+  } catch {
+    isTokenKeyReady = false;
+  }
 
   return [
     {

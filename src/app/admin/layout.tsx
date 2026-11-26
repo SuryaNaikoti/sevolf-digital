@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireAdminSession } from "@/lib/auth/adminGate";
 import { AdminLayoutClient } from "@/components/admin/AdminLayoutClient";
+import { getLaunchReadinessChecklist } from "@/services/admin/readiness";
 
 export const dynamic = "force-dynamic";
 
@@ -28,5 +29,8 @@ export default async function AdminLayout({
     }
   }
 
-  return <AdminLayoutClient>{children}</AdminLayoutClient>;
+  const checklist = await getLaunchReadinessChecklist();
+  const isLaunchReady = checklist.every((i) => i.status === "ready");
+
+  return <AdminLayoutClient isLaunchReady={isLaunchReady}>{children}</AdminLayoutClient>;
 }

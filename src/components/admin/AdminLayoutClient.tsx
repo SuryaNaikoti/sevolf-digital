@@ -4,7 +4,13 @@ import { useState } from "react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 
-export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
+export function AdminLayoutClient({
+  children,
+  isLaunchReady = false,
+}: {
+  children: React.ReactNode;
+  isLaunchReady?: boolean;
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -28,6 +34,7 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
           onOpenMobile={() => setMobileOpen(true)}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
+          isLaunchReady={isLaunchReady}
         />
         <main className="flex-1 p-4 sm:p-6 lg:p-10 max-w-[1440px] w-full mx-auto space-y-6 sm:space-y-8">
           {children}

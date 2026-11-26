@@ -9,9 +9,10 @@ interface AdminHeaderProps {
   onOpenMobile?: () => void;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+  isLaunchReady?: boolean;
 }
 
-export function AdminHeader({ onOpenMobile, collapsed = false, onToggleCollapse }: AdminHeaderProps) {
+export function AdminHeader({ onOpenMobile, collapsed = false, onToggleCollapse, isLaunchReady = false }: AdminHeaderProps) {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -102,6 +103,26 @@ export function AdminHeader({ onOpenMobile, collapsed = false, onToggleCollapse 
 
       {/* Right Studio Controls */}
       <div className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
+        {/* Dynamic Launch Readiness Pill */}
+        <Link
+          href="/admin/readiness"
+          className={`hidden sm:inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full border text-[10px] font-mono transition-colors ${
+            isLaunchReady
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100"
+              : "bg-[#FBF7F0] border-[#EADFCB] text-[#8C6D34] hover:bg-[#F6EFE2]"
+          }`}
+          title="Operational Checklist Gate"
+        >
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              isLaunchReady ? "bg-emerald-600" : "bg-[#A37E3E] animate-pulse"
+            }`}
+          />
+          <span className="font-medium uppercase tracking-wider">
+            {isLaunchReady ? "READY TO LAUNCH" : "PRE-LAUNCH GATE"}
+          </span>
+        </Link>
+
         {/* Notifications Popover */}
         <div className="relative">
           <button
