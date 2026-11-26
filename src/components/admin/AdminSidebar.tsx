@@ -51,7 +51,7 @@ const NAV_SECTIONS: NavSection[] = [
     title: "STUDIO",
     items: [
       { name: "Overview", href: "/admin", icon: LayoutDashboard },
-      { name: "Launch Readiness", href: "/admin/readiness", icon: Rocket, badge: "GATE", badgeVariant: "warning" },
+      { name: "Launch Readiness", href: "/admin/readiness", icon: Rocket },
     ],
   },
   {

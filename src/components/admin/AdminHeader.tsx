@@ -102,16 +102,6 @@ export function AdminHeader({ onOpenMobile, collapsed = false, onToggleCollapse 
 
       {/* Right Studio Controls */}
       <div className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
-        {/* Verification Status Pill */}
-        <Link
-          href="/admin/readiness"
-          className="hidden sm:inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-[#FBF7F0] border border-[#EADFCB] text-[10px] font-mono text-[#8C6D34] hover:bg-[#F6EFE2] transition-colors"
-          title="Operational Checklist Gate"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#A37E3E] animate-pulse" />
-          <span className="font-medium uppercase tracking-wider">PRE-LAUNCH GATE</span>
-        </Link>
-
         {/* Notifications Popover */}
         <div className="relative">
           <button
