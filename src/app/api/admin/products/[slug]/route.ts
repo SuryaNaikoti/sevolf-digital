@@ -16,7 +16,8 @@ export async function GET(req: Request, context: { params: Promise<{ slug: strin
         *,
         product_categories (id, name, slug),
         product_media (*),
-        product_prices (*)
+        product_prices (*),
+        digital_assets (*)
       `)
       .eq("slug", slug)
       .single();
@@ -39,42 +40,63 @@ export async function PATCH(req: Request, context: { params: Promise<{ slug: str
     const body = await req.json();
     const validated = updateProductSchema.parse(body);
 
-    // STRICT INVARIANT ENFORCEMENT:
-    // 1. Gated: Cannot change status to 'published' in staging
-    if (validated.status === "published") {
-      return NextResponse.json(
-        {
-          error: "RESTRICTED: Product publication is strictly locked in staging. Products must remain in 'draft' or 'archived' status pending Phase 2 commercial authorization.",
-          code: "PRODUCTION_PUBLISH_GATED",
-        },
-        { status: 403 }
-      );
-    }
-
-    // 2. Gated: Cannot activate production pricing directly via admin draft save
-    if (validated.activate_pricing || validated.is_price_active) {
-      return NextResponse.json(
-        {
-          error: "RESTRICTED: Production price activation is locked. Price activation requires authorized pricing migration schedules.",
-          code: "PRODUCTION_PRICING_GATED",
-        },
-        { status: 403 }
-      );
-    }
-
     const { adminClient } = auth.context;
+
+    // Enforce real publication conditions before transitioning to 'published'
+    if (validated.status === "published") {
+      const { data: existingProd, error: prodErr } = await adminClient
+        .from("products")
+        .select("id, name, short_description")
+        .eq("slug", slug)
+        .single();
+
+      if (prodErr || !existingProd) {
+        return NextResponse.json({ error: "Product not found." }, { status: 404 });
+      }
+
+      const [{ data: activePrices }, { data: activeAssets }] = await Promise.all([
+        adminClient
+          .from("product_prices")
+          .select("id, amount")
+          .eq("product_id", existingProd.id)
+          .gt("amount", 0),
+        adminClient
+          .from("digital_assets")
+          .select("id")
+          .eq("product_id", existingProd.id)
+          .eq("is_active", true),
+      ]);
+
+      const missing: string[] = [];
+      if (!activePrices || activePrices.length === 0) missing.push("an active price");
+      if (!activeAssets || activeAssets.length === 0) missing.push("an active digital asset");
+
+      if (missing.length > 0) {
+        return NextResponse.json(
+          {
+            error: `Cannot publish product: requires ${missing.join(" and ")}.`,
+            code: "PUBLISH_CONDITIONS_UNMET",
+          },
+          { status: 400 }
+        );
+      }
+    }
 
     const allowedUpdates: Record<string, any> = {
       updated_at: new Date().toISOString(),
     };
 
     if (validated.name !== undefined) allowedUpdates.name = validated.name;
+    if (validated.slug !== undefined) allowedUpdates.slug = validated.slug;
     if (validated.tagline !== undefined) allowedUpdates.tagline = validated.tagline;
     if (validated.short_description !== undefined) allowedUpdates.short_description = validated.short_description;
     if (validated.full_description !== undefined) allowedUpdates.full_description = validated.full_description;
+    if (validated.category_id !== undefined) allowedUpdates.category_id = validated.category_id;
     if (validated.product_type !== undefined) allowedUpdates.product_type = validated.product_type;
     if (validated.format !== undefined) allowedUpdates.format = validated.format;
     if (validated.format_label !== undefined) allowedUpdates.format_label = validated.format_label;
+    if (validated.cover_image_url !== undefined) allowedUpdates.cover_image_url = validated.cover_image_url;
+    if (validated.licence_type !== undefined) allowedUpdates.licence_type = validated.licence_type;
     if (validated.tags !== undefined) allowedUpdates.tags = validated.tags;
     if (validated.seo_title !== undefined) allowedUpdates.seo_title = validated.seo_title;
     if (validated.seo_description !== undefined) allowedUpdates.seo_description = validated.seo_description;

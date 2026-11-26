@@ -36,16 +36,13 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validated = createProductSchema.parse(body);
 
-    // STRICT INVARIANT ENFORCEMENT:
-    // Staging and admin creation MUST ALWAYS remain 'draft'.
-    // Direct publishing or setting status='published' is strictly gated.
-    if (validated.status === "published") {
+    if (validated.status === "published" && (!validated.price || validated.price <= 0)) {
       return NextResponse.json(
         {
-          error: "RESTRICTED: Products cannot be created directly in 'published' status. Production publication requires authorized Phase 2 launch verification.",
-          code: "PRODUCTION_PUBLISH_GATED",
+          error: "Cannot publish a product directly without an active price and digital asset. Save as Draft first, attach a digital asset, and then publish.",
+          code: "PUBLISH_CONDITIONS_UNMET",
         },
-        { status: 403 }
+        { status: 400 }
       );
     }
 
@@ -88,8 +85,10 @@ export async function POST(req: Request) {
       cover_image_url: validated.cover_image_url,
       licence_type: validated.licence_type,
       licence_description: "Single-household personal licence.",
-      status: "draft", // Strictly forced to draft
+      status: validated.status === "published" ? "draft" : validated.status,
       tags: validated.tags,
+      seo_title: validated.seo_title || validated.name,
+      seo_description: validated.seo_description || validated.short_description || `${validated.name} - Digital Product`,
       is_featured: false,
       is_new_arrival: false,
       is_bestseller: false,
@@ -102,8 +101,31 @@ export async function POST(req: Request) {
       .select()
       .single();
 
-    if (error) {
-      return handleApiError(error, "Failed to create draft product.");
+    if (error || !data) {
+      return handleApiError(error, "Failed to create product.");
+    }
+
+    // Insert initial price if provided
+    if (validated.price && validated.price > 0) {
+      await adminClient.from("product_prices").insert({
+        product_id: data.id,
+        currency: validated.currency || "INR",
+        amount: validated.price,
+        compare_at_amount: validated.compare_at_amount ?? null,
+        is_default: validated.is_price_active ?? (validated.currency || "INR") === "INR",
+      });
+    }
+
+    // Insert gallery & preview media if provided
+    const mediaRows: any[] = [];
+    (validated.gallery_images || []).forEach((url, idx) => {
+      mediaRows.push({ product_id: data.id, media_type: "gallery", url, display_order: idx + 1 });
+    });
+    (validated.preview_images || []).forEach((url, idx) => {
+      mediaRows.push({ product_id: data.id, media_type: "preview", url, display_order: idx + 1 });
+    });
+    if (mediaRows.length > 0) {
+      await adminClient.from("product_media").insert(mediaRows);
     }
 
     return NextResponse.json({ success: true, product: data }, { status: 201 });

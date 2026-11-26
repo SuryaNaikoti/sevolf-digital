@@ -7,33 +7,53 @@ export const createProductSchema = z.object({
   tagline: z.string().max(500).optional().default(""),
   short_description: z.string().max(1000).optional().default(""),
   full_description: z.string().optional().default(""),
-  category_id: z.string().uuid("Invalid category ID format").optional(),
+  category_id: z.string().uuid("Invalid category ID format").nullable().optional(),
+  collection_id: z.string().uuid("Invalid collection ID format").nullable().optional(),
   product_type: z.string().max(100).optional().default("Digital Workbook"),
   format: z.string().max(50).optional().default("pdf"),
   format_label: z.string().max(150).optional().default("PDF (Print-Ready)"),
   cover_image_url: z.string().max(500).optional().default("/images/products/home-reset-kit/cover.jpg"),
+  gallery_images: z.array(z.string().max(500)).optional().default([]),
+  preview_images: z.array(z.string().max(500)).optional().default([]),
   licence_type: z.string().max(50).optional().default("personal"),
   status: z.enum(["draft", "archived", "published"]).optional().default("draft"),
   tags: z.array(z.string()).optional().default(["digital", "draft"]),
+  seo_title: z.string().max(255).optional(),
+  seo_description: z.string().max(500).optional(),
+  // Optional initial pricing
+  price: z.number().positive("Price must be greater than 0").optional(),
+  currency: z.enum(["INR", "USD", "GBP", "EUR"]).optional().default("INR"),
+  compare_at_amount: z.number().positive().nullable().optional(),
+  is_price_active: z.boolean().optional().default(true),
 });
 
 export const updateProductSchema = z.object({
   name: z.string().trim().min(2).max(255).optional(),
+  slug: z.string().trim().min(2).max(255).regex(/^[a-z0-9-]+$/).optional(),
   tagline: z.string().max(500).optional(),
   short_description: z.string().max(1000).optional(),
   full_description: z.string().optional(),
-  category_id: z.string().uuid().optional(),
+  category_id: z.string().uuid().nullable().optional(),
+  collection_id: z.string().uuid().nullable().optional(),
   product_type: z.string().max(100).optional(),
   format: z.string().max(50).optional(),
   format_label: z.string().max(150).optional(),
   cover_image_url: z.string().max(500).optional(),
+  gallery_images: z.array(z.string().max(500)).optional(),
+  preview_images: z.array(z.string().max(500)).optional(),
   licence_type: z.string().max(50).optional(),
   status: z.enum(["draft", "archived", "published"]).optional(),
   tags: z.array(z.string()).optional(),
   seo_title: z.string().max(255).optional(),
   seo_description: z.string().max(500).optional(),
-  activate_pricing: z.boolean().optional(),
-  is_price_active: z.boolean().optional(),
+});
+
+export const upsertPriceSchema = z.object({
+  price_id: z.string().uuid().optional(),
+  currency: z.enum(["INR", "USD", "GBP", "EUR"]),
+  amount: z.number().positive("Price must be greater than 0"),
+  compare_at_amount: z.number().positive().nullable().optional(),
+  is_active: z.boolean().default(true),
 });
 
 // 2. COLLECTIONS SCHEMAS

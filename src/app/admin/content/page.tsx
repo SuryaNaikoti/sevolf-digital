@@ -1,4 +1,4 @@
-import { FileText, Eye, CheckCircle2, Globe, LayoutTemplate } from "lucide-react";
+import { FileText, Eye, Globe, LayoutTemplate } from "lucide-react";
 import Link from "next/link";
 import {
   AdminPageHeader,
@@ -17,60 +17,56 @@ export default function AdminContentPage() {
   ];
 
   return (
-    <div className="space-y-4">
-      {/* Unified Page Header */}
+    <div className="space-y-8">
+      {/* Header */}
       <AdminPageHeader
         title="Store Content & CMS"
-        subtitle="Manage storefront editorial sections, banners, announcements, and narrative copy."
+        subtitle="Manage storefront editorial sections, banners, announcements, and narrative brand copy."
         actions={
-          <AdminButton
-            variant="secondary"
-            icon={Globe}
-            onClick={undefined}
-          >
-            <Link href="/" target="_blank" className="flex items-center space-x-1.5">
-              <span>View Online Store</span>
-            </Link>
-          </AdminButton>
+          <Link href="/" target="_blank">
+            <AdminButton variant="secondary" icon={Globe}>
+              View Online Store
+            </AdminButton>
+          </Link>
         }
       />
 
       {/* Main Table Card */}
       <AdminCard
-        title={`Configured Content Blocks (${sections.length})`}
-        subtitle="Editorial sections rendered on customer storefront"
+        title={`Configured Editorial Blocks (${sections.length})`}
+        subtitle="Dynamic CMS sections rendered across customer storefront"
         padding={false}
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-[#E1E3E5] bg-[#FAFBFB] text-[#6D7175] font-medium">
-                <th className="py-2.5 px-4">Section Name</th>
-                <th className="py-2.5 px-4">Type</th>
-                <th className="py-2.5 px-4">Identifier Key</th>
-                <th className="py-2.5 px-4">Status</th>
-                <th className="py-2.5 px-4 text-right">Actions</th>
+              <tr className="border-b border-[#E8E5DD] bg-[#FAF8F5] text-[#85847D] font-mono uppercase text-[10px] tracking-wider">
+                <th className="py-3 px-5">Section Title</th>
+                <th className="py-3 px-5">Type</th>
+                <th className="py-3 px-5">Identifier Key</th>
+                <th className="py-3 px-5">Status</th>
+                <th className="py-3 px-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E1E3E5]">
+            <tbody className="divide-y divide-[#E8E5DD]">
               {sections.map((sec) => (
-                <tr key={sec.key} className="hover:bg-[#F6F6F7]/80 transition-colors">
-                  <td className="py-3 px-4 font-semibold text-[#202223]">
+                <tr key={sec.key} className="hover:bg-[#FAF8F5] transition-colors">
+                  <td className="py-3.5 px-5 font-medium text-[#22231F]">
                     <div className="flex items-center space-x-2.5">
-                      <LayoutTemplate className="w-4 h-4 text-[#6D7175]" />
+                      <LayoutTemplate className="w-4 h-4 text-[#85866A]" />
                       <span>{sec.title}</span>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-[#6D7175]">{sec.type}</td>
-                  <td className="py-3 px-4 font-mono text-[11px] text-[#6D7175]">{sec.key}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-3.5 px-5 text-[#85847D]">{sec.type}</td>
+                  <td className="py-3.5 px-5 font-mono text-[11px] text-[#85847D]">{sec.key}</td>
+                  <td className="py-3.5 px-5">
                     <AdminStatusBadge variant="success">Active</AdminStatusBadge>
                   </td>
-                  <td className="py-3 px-4 text-right">
+                  <td className="py-3.5 px-5 text-right">
                     <Link
                       href="/"
                       target="_blank"
-                      className="inline-flex items-center space-x-1 text-[#008060] font-medium hover:underline text-xs"
+                      className="inline-flex items-center space-x-1 text-[#85866A] font-mono uppercase text-[11px] tracking-wider hover:text-[#22231F] hover:underline"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>Preview</span>

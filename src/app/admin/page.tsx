@@ -10,244 +10,454 @@ import {
   ShieldCheck,
   CheckCircle2,
   Calendar,
-  Filter,
+  Layers,
+  FileArchive,
+  Sparkles,
+  ArrowRight,
+  FlaskConical,
 } from "lucide-react";
 import Link from "next/link";
 import { getAdminProducts } from "@/services/admin/products";
+import { getLaunchReadinessChecklist } from "@/services/admin/readiness";
+import { AdminCard, AdminStatusBadge, AdminButton } from "@/components/admin/ui/AdminComponents";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isLiveTransaction, isTestTransaction } from "@/lib/commerce/transactionClassifier";
 
 export default async function AdminOverviewPage() {
-  const products = await getAdminProducts();
+  const [products, readinessChecklist] = await Promise.all([
+    getAdminProducts(),
+    getLaunchReadinessChecklist(),
+  ]);
+  const readyCount = readinessChecklist.filter((i) => i.status === "ready").length;
+  const totalCount = readinessChecklist.length;
+
+  // Real query from database via privileged admin client
+  const supabase = createAdminClient();
+
+  // 1. Authoritative storewide financial & fulfilment RPC
+  const { data: storewideMetrics, error: metricsError } = await supabase.rpc("get_admin_storewide_metrics");
+
+  let grossSales = 0;
+  let totalRefunds = 0;
+  let netRevenue = 0;
+  let livePaidOrdersCount = 0;
+  let testOrdersCount = 0;
+  let testRevenue = 0;
+  let totalEligibleOrders = 0;
+  let fullyFulfilledCount = 0;
+  let fulfillmentRate = 0;
+
+  if (!metricsError && storewideMetrics && storewideMetrics[0]) {
+    const m = storewideMetrics[0];
+    grossSales = Number(m.gross_sales || 0);
+    totalRefunds = Number(m.total_refunds || 0);
+    netRevenue = Number(m.net_revenue || 0);
+    livePaidOrdersCount = Number(m.live_paid_orders_count || 0);
+    testOrdersCount = Number(m.test_orders_count || 0);
+    testRevenue = Number(m.test_revenue || 0);
+    totalEligibleOrders = Number(m.total_eligible_fulfilment_orders || 0);
+    fullyFulfilledCount = Number(m.fully_fulfilled_orders_count || 0);
+    fulfillmentRate = Number(m.fulfilment_rate_percent || 0);
+  }
+
+  // 2. Fetch recent ledger entries for the activity table (without restricting storewide calculations)
+  const { data: orders } = await supabase
+    .from("orders")
+    .select(`
+      *,
+      order_items (
+        id,
+        product_id,
+        product_name,
+        products (
+          id,
+          digital_assets (
+            id,
+            is_active
+          )
+        )
+      ),
+      download_entitlements (
+        id,
+        is_active,
+        is_revoked,
+        expires_at
+      ),
+      payments (
+        id,
+        gateway,
+        gateway_transaction_id,
+        environment,
+        raw_response
+      )
+    `)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  const realOrders = orders || [];
+  const liveRevenue = netRevenue;
+
+  // Fulfilment health card display state
+  let fulfillmentStatusText = "Standby (No Orders Yet)";
+  let fulfillmentMetric = "—";
+  let fulfillmentVariant: "neutral" | "success" | "warning" = "neutral";
+
+  if (totalEligibleOrders > 0) {
+    fulfillmentMetric = `${fulfillmentRate}%`;
+    fulfillmentStatusText = `${fullyFulfilledCount} of ${totalEligibleOrders} fully delivered`;
+    fulfillmentVariant = fulfillmentRate === 100 ? "success" : fulfillmentRate > 0 ? "warning" : "neutral";
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Top Welcome & Filter Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-[#202223] tracking-tight">Overview</h1>
-          <p className="text-xs text-[#6D7175]">
-            Real-time store performance, fulfillment health, and pre-launch operational alerts.
+    <div className="space-y-8">
+      {/* 1. Studio Editorial Greeting & Controls */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E8E5DD]">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2 text-xs font-mono uppercase tracking-[0.15em] text-[#85866A]">
+            <span>SEVOLF Digital</span>
+            <span>•</span>
+            <span>Studio Control Center</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-serif font-light text-[#22231F] tracking-tight">
+            Studio Overview
+          </h1>
+          <p className="text-xs sm:text-[13px] text-[#85847D] max-w-2xl font-sans">
+            Real-time telemetry, catalogue status, and operational verification gates for SEVOLF Digital Product Studio.
           </p>
         </div>
 
-        <div className="flex items-center space-x-2 shrink-0">
-          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-white border border-[#BABFC3] rounded-md text-xs text-[#202223] font-medium shadow-2xs">
-            <Calendar className="w-3.5 h-3.5 text-[#6D7175]" />
+        <div className="flex items-center space-x-2.5 shrink-0">
+          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-white border border-[#E8E5DD] rounded-md text-xs text-[#22231F] font-mono shadow-xs">
+            <Calendar className="w-3.5 h-3.5 text-[#85866A]" />
             <span>Today</span>
           </div>
 
-          <Link
-            href="/admin/products"
-            className="px-3 py-1.5 bg-[#202223] hover:bg-black text-white text-xs font-semibold rounded-md shadow-2xs transition-colors"
-          >
-            Manage Products
+          <Link href="/admin/products">
+            <AdminButton variant="primary">
+              Manage Products
+            </AdminButton>
           </Link>
         </div>
       </div>
 
-      {/* Pre-launch Onboarding Alert */}
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start space-x-3 text-xs leading-relaxed text-amber-900 shadow-2xs">
-        <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-        <div className="flex-1">
-          <p className="font-semibold text-amber-950">Store is in Pre-launch Verification</p>
-          <p className="text-amber-800/90 mt-0.5">
-            Real payments are held in disconnected mode. Live product pricing rows are zero. Launch Readiness gate is currently <strong>8 / 14 Complete</strong>.
-          </p>
+      {/* 2. Studio Pre-launch Gate Banner */}
+      <div className="bg-[#FAF8F5] border border-[#E8E5DD] rounded-lg p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+        <div className="flex items-start space-x-3.5">
+          <div className="w-9 h-9 rounded-full bg-[#FBF7F0] border border-[#EADFCB] text-[#8C6D34] flex items-center justify-center shrink-0 mt-0.5">
+            <AlertCircle className="w-4 h-4" />
+          </div>
+          <div className="space-y-0.5">
+            <div className="flex items-center space-x-2">
+              <h2 className="text-sm font-serif font-normal text-[#22231F]">
+                Pre-Launch Operational Verification Gate Active
+              </h2>
+              <span className="text-[10px] font-mono uppercase tracking-wider bg-[#FBF7F0] text-[#8C6D34] border border-[#EADFCB] px-2 py-0.5 rounded-full font-medium">
+                {readyCount} / {totalCount} Complete
+              </span>
+            </div>
+            <p className="text-xs text-[#85847D] leading-relaxed max-w-3xl">
+              Live commercial payments are locked in disconnected mode. Test transactions are strictly segregated from business revenue.
+            </p>
+          </div>
         </div>
+
         <Link
           href="/admin/readiness"
-          className="text-xs font-semibold text-amber-950 underline shrink-0 hover:text-black"
+          className="inline-flex items-center space-x-1.5 text-xs font-mono uppercase tracking-wider text-[#85866A] hover:text-[#22231F] transition-colors shrink-0 underline underline-offset-4"
         >
-          View Checklist
+          <span>Review Gates</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
 
-      {/* Metrics Row (Shopify Compact Metric Cards) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-[#E1E3E5] rounded-lg p-4 space-y-1 shadow-2xs">
-          <div className="flex items-center justify-between text-[#6D7175]">
-            <span className="text-xs font-medium">Total Sales</span>
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+      {/* 3. Key Financial & Operational Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <AdminCard padding={false} className="p-5 space-y-3">
+          <div className="flex items-center justify-between text-[#85847D]">
+            <span className="text-[11px] font-mono uppercase tracking-wider font-medium">Live Business Revenue</span>
+            <TrendingUp className="w-4 h-4 text-[#85866A]" />
           </div>
-          <p className="text-xl font-bold text-[#202223]">₹0.00</p>
-          <p className="text-[11px] text-[#6D7175]">0 live orders captured</p>
-        </div>
+          <div className="space-y-1">
+            <p className="text-2xl sm:text-3xl font-serif font-light text-[#22231F]">
+              ₹{liveRevenue.toFixed(2)}
+            </p>
+            <p className="text-[11px] text-[#85847D] font-mono">
+              {livePaidOrdersCount} live commercial order{livePaidOrdersCount === 1 ? "" : "s"}
+            </p>
+          </div>
+        </AdminCard>
 
-        <div className="bg-white border border-[#E1E3E5] rounded-lg p-4 space-y-1 shadow-2xs">
-          <div className="flex items-center justify-between text-[#6D7175]">
-            <span className="text-xs font-medium">Total Orders</span>
-            <ShoppingCart className="w-4 h-4 text-[#6D7175]" />
+        <AdminCard padding={false} className="p-5 space-y-3">
+          <div className="flex items-center justify-between text-[#85847D]">
+            <span className="text-[11px] font-mono uppercase tracking-wider font-medium">Test & Sandbox Orders</span>
+            <FlaskConical className="w-4 h-4 text-[#85866A]" />
           </div>
-          <p className="text-xl font-bold text-[#202223]">0</p>
-          <p className="text-[11px] text-[#6D7175]">0 orders in current period</p>
-        </div>
+          <div className="space-y-1">
+            <p className="text-2xl sm:text-3xl font-serif font-light text-[#22231F]">
+              {testOrdersCount}
+            </p>
+            <p className="text-[11px] text-[#85847D] font-mono">
+              {testOrdersCount > 0 ? "Excluded from business KPIs" : "Zero test transactions"}
+            </p>
+          </div>
+        </AdminCard>
 
-        <div className="bg-white border border-[#E1E3E5] rounded-lg p-4 space-y-1 shadow-2xs">
-          <div className="flex items-center justify-between text-[#6D7175]">
-            <span className="text-xs font-medium">Average Order Value</span>
-            <span className="text-[11px] font-mono text-[#6D7175]">—</span>
+        <AdminCard padding={false} className="p-5 space-y-3">
+          <div className="flex items-center justify-between text-[#85847D]">
+            <span className="text-[11px] font-mono uppercase tracking-wider font-medium">Studio Catalogue</span>
+            <Package className="w-4 h-4 text-[#85866A]" />
           </div>
-          <p className="text-xl font-bold text-[#202223]">₹0.00</p>
-          <p className="text-[11px] text-[#6D7175]">No live order transactions</p>
-        </div>
+          <div className="space-y-1">
+            <p className="text-2xl sm:text-3xl font-serif font-light text-[#22231F]">{products.length}</p>
+            <p className="text-[11px] text-[#85847D] font-mono">PDF & digital packages</p>
+          </div>
+        </AdminCard>
 
-        <div className="bg-white border border-[#E1E3E5] rounded-lg p-4 space-y-1 shadow-2xs">
-          <div className="flex items-center justify-between text-[#6D7175]">
-            <span className="text-xs font-medium">Returning Customer Rate</span>
-            <Users className="w-4 h-4 text-[#6D7175]" />
+        <AdminCard padding={false} className="p-5 space-y-3">
+          <div className="flex items-center justify-between text-[#85847D]">
+            <span className="text-[11px] font-mono uppercase tracking-wider font-medium">Fulfilment Health</span>
+            <ShieldCheck className={`w-4 h-4 ${fulfillmentVariant === "success" ? "text-[#55694B]" : "text-[#85866A]"}`} />
           </div>
-          <p className="text-xl font-bold text-[#202223]">0.0%</p>
-          <p className="text-[11px] text-[#6D7175]">Baseline ready for launch</p>
-        </div>
+          <div className="space-y-1">
+            <p className="text-2xl sm:text-3xl font-serif font-light text-[#22231F]">
+              {fulfillmentMetric}
+            </p>
+            <p className="text-[11px] text-[#85847D] font-mono">
+              {fulfillmentStatusText}
+            </p>
+          </div>
+        </AdminCard>
       </div>
 
-      {/* Main Content Grid: Recent Orders & Top Products */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column (2 cols): Recent Orders & Fulfilment */}
-        <div className="lg:col-span-2 space-y-6">
+      {/* 4. Main Two-Column Studio Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column (2 cols): Orders Queue & Fulfillment Ledger */}
+        <div className="lg:col-span-2 space-y-8">
           {/* Recent Orders Card */}
-          <div className="bg-white border border-[#E1E3E5] rounded-lg overflow-hidden shadow-2xs">
-            <div className="px-4 py-3 border-b border-[#E1E3E5] flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-[#202223] font-mono">
-                Recent Orders
-              </h2>
+          <AdminCard
+            title={`Orders Ledger (${realOrders.length})`}
+            subtitle="Real transactional records logged from checkout"
+            action={
               <Link
                 href="/admin/orders"
-                className="text-xs text-[#008060] font-semibold hover:underline"
+                className="text-xs font-mono uppercase tracking-wider text-[#85866A] hover:text-[#22231F] hover:underline transition-colors"
               >
-                View all orders
+                All Orders →
               </Link>
-            </div>
-
-            <div className="p-8 text-center space-y-2">
-              <div className="w-10 h-10 rounded-full bg-[#F6F6F7] border border-[#E1E3E5] mx-auto flex items-center justify-center text-[#6D7175]">
-                <ShoppingCart className="w-4 h-4" />
-              </div>
-              <h3 className="text-xs font-semibold text-[#202223]">You have no orders yet</h3>
-              <p className="text-xs text-[#6D7175] max-w-sm mx-auto">
-                Orders placed through your customer storefront will appear here once live payment gateways are connected.
-              </p>
-            </div>
-          </div>
-
-          {/* Operational Health Table */}
-          <div className="bg-white border border-[#E1E3E5] rounded-lg overflow-hidden shadow-2xs">
-            <div className="px-4 py-3 border-b border-[#E1E3E5] flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-[#202223] font-mono">
-                System Operations & Fulfilment
-              </h2>
-              <span className="text-[10px] font-mono font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                HEALTHY
-              </span>
-            </div>
-
-            <div className="divide-y divide-[#E1E3E5] text-xs">
-              <div className="p-3.5 flex items-center justify-between hover:bg-[#F6F6F7]/60">
-                <div className="space-y-0.5">
-                  <p className="font-medium text-[#202223]">Delivery Outbox Processor</p>
-                  <p className="text-[#6D7175] text-[11px]">Lease locking and background worker active</p>
+            }
+            padding={false}
+          >
+            {realOrders.length === 0 ? (
+              <div className="p-10 text-center space-y-3">
+                <div className="w-11 h-11 rounded-full bg-[#FAF8F5] border border-[#E8E5DD] mx-auto flex items-center justify-center text-[#85847D]">
+                  <ShoppingCart className="w-4 h-4" />
                 </div>
-                <span className="font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">
-                  0 Pending Jobs
+                <div className="space-y-1 max-w-sm mx-auto">
+                  <h3 className="text-sm font-serif font-normal text-[#22231F]">No Orders Yet</h3>
+                  <p className="text-xs text-[#85847D] leading-relaxed">
+                    Real orders placed through your storefront will register here once live payment gateways are connected.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-[#E8E5DD] bg-[#FAF8F5] text-[#85847D] font-mono uppercase text-[10px] tracking-wider">
+                      <th className="py-3 px-5">Order #</th>
+                      <th className="py-3 px-5">Patron</th>
+                      <th className="py-3 px-5">Environment</th>
+                      <th className="py-3 px-5">Status</th>
+                      <th className="py-3 px-5">Fulfilment</th>
+                      <th className="py-3 px-5 text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E8E5DD]">
+                    {realOrders.map((o) => {
+                      const isTest = isTestTransaction(o);
+                      return (
+                        <tr key={o.id} className="hover:bg-[#FAF8F5] transition-colors">
+                          <td className="py-3.5 px-5 font-mono font-medium text-[#22231F]">
+                            {o.order_number}
+                          </td>
+                          <td className="py-3.5 px-5">
+                            <p className="font-medium text-[#22231F]">{o.customer_name || "Valued Patron"}</p>
+                            <p className="text-[11px] text-[#85847D] font-mono">{o.customer_email}</p>
+                          </td>
+                          <td className="py-3.5 px-5">
+                            {isTest ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium uppercase tracking-wider bg-[#FBF7F0] text-[#8C6D34] border border-[#EADFCB]">
+                                Test Mode
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium uppercase tracking-wider bg-[#F2F5F0] text-[#55694B] border border-[#D4DCCF]">
+                                Live
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3.5 px-5">
+                            <AdminStatusBadge variant={o.status === "paid" ? "success" : "warning"}>
+                              {o.status}
+                            </AdminStatusBadge>
+                          </td>
+                          <td className="py-3.5 px-5">
+                            <span className="text-[11px] font-mono text-[#55694B] bg-[#F2F5F0] border border-[#D4DCCF] px-2 py-0.5 rounded">
+                              {o.download_entitlements?.length || 0} Delivered
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-5 text-right font-serif text-sm font-medium text-[#22231F]">
+                            ₹{o.total_amount}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </AdminCard>
+
+          {/* Operational Engine & Background Workers */}
+          <AdminCard
+            title="System Operations & Fulfillment"
+            subtitle="Background delivery workers, lease locks, and ledger idempotency"
+            action={
+              <AdminStatusBadge variant="success">Operational</AdminStatusBadge>
+            }
+            padding={false}
+          >
+            <div className="divide-y divide-[#E8E5DD] text-xs">
+              <div className="p-4 flex items-center justify-between hover:bg-[#FAF8F5] transition-colors">
+                <div className="space-y-0.5">
+                  <p className="font-medium text-[#22231F]">Delivery Outbox Background Worker</p>
+                  <p className="text-[#85847D] text-[11px]">Lease locking and transactional job processor</p>
+                </div>
+                <span className="font-mono text-[#55694B] bg-[#F2F5F0] border border-[#D4DCCF] px-2.5 py-0.5 rounded text-[11px]">
+                  0 Pending Tasks
                 </span>
               </div>
 
-              <div className="p-3.5 flex items-center justify-between hover:bg-[#F6F6F7]/60">
+              <div className="p-4 flex items-center justify-between hover:bg-[#FAF8F5] transition-colors">
                 <div className="space-y-0.5">
-                  <p className="font-medium text-[#202223]">V13 Refund Procedures</p>
-                  <p className="text-[#6D7175] text-[11px]">Replay idempotency and line-item limit enforced</p>
+                  <p className="font-medium text-[#22231F]">V13 Atomic Refund Engine</p>
+                  <p className="text-[#85847D] text-[11px]">Strict lock order and line-item balance preservation</p>
                 </div>
-                <span className="font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">
+                <span className="font-mono text-[#55694B] bg-[#F2F5F0] border border-[#D4DCCF] px-2.5 py-0.5 rounded text-[11px]">
                   Enforced
                 </span>
               </div>
 
-              <div className="p-3.5 flex items-center justify-between hover:bg-[#F6F6F7]/60">
+              <div className="p-4 flex items-center justify-between hover:bg-[#FAF8F5] transition-colors">
                 <div className="space-y-0.5">
-                  <p className="font-medium text-[#202223]">Payment Integrations</p>
-                  <p className="text-[#6D7175] text-[11px]">Razorpay & Stripe in disconnected pre-launch mode</p>
+                  <p className="font-medium text-[#22231F]">Payment Gateway Connectors</p>
+                  <p className="text-[#85847D] text-[11px]">Razorpay held safely in test mode</p>
                 </div>
-                <span className="font-mono text-amber-800 bg-amber-50 px-2 py-0.5 rounded text-[11px]">
-                  Disconnected
+                <span className="font-mono text-[#8C6D34] bg-[#FBF7F0] border border-[#EADFCB] px-2.5 py-0.5 rounded text-[11px]">
+                  Pre-Launch Mode
                 </span>
               </div>
             </div>
-          </div>
+          </AdminCard>
         </div>
 
-        {/* Right Column: Top Products & Fast Actions */}
-        <div className="space-y-6">
-          {/* Top Products Card */}
-          <div className="bg-white border border-[#E1E3E5] rounded-lg overflow-hidden shadow-2xs">
-            <div className="px-4 py-3 border-b border-[#E1E3E5] flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-[#202223] font-mono">
-                Draft Catalogue ({products.length})
-              </h2>
+        {/* Right Column (1 col): Product Catalogue & Studio Shortcuts */}
+        <div className="space-y-8">
+          {/* Catalogue Snapshot */}
+          <AdminCard
+            title={`Catalogue (${products.length})`}
+            subtitle="Curated digital products in drafting"
+            action={
               <Link
                 href="/admin/products"
-                className="text-xs text-[#008060] font-semibold hover:underline"
+                className="text-xs font-mono uppercase tracking-wider text-[#85866A] hover:text-[#22231F] hover:underline transition-colors"
               >
-                View all
+                View all →
               </Link>
-            </div>
-
-            <div className="divide-y divide-[#E1E3E5]">
+            }
+            padding={false}
+          >
+            <div className="divide-y divide-[#E8E5DD]">
               {products.map((p) => (
-                <div key={p.id} className="p-3.5 flex items-center justify-between text-xs">
+                <div key={p.id} className="p-4 flex items-center justify-between text-xs hover:bg-[#FAF8F5] transition-colors">
                   <div className="flex items-center space-x-3 min-w-0">
-                    <div className="w-8 h-8 rounded bg-[#F6F6F7] border border-[#E1E3E5] flex items-center justify-center shrink-0">
-                      <Package className="w-4 h-4 text-[#6D7175]" />
+                    <div className="w-8 h-8 rounded bg-[#F7F5F0] border border-[#E8E5DD] flex items-center justify-center shrink-0 text-[#85866A]">
+                      <Package className="w-4 h-4" />
                     </div>
                     <div className="truncate">
-                      <p className="font-medium text-[#202223] truncate">{p.name}</p>
-                      <p className="text-[11px] text-[#6D7175] font-mono truncate">{p.formatLabel}</p>
+                      <p className="font-medium text-[#22231F] truncate">{p.name}</p>
+                      <p className="text-[11px] text-[#85847D] font-mono truncate">{p.formatLabel}</p>
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <span className="font-mono font-medium text-[#202223]">₹{p.price}</span>
-                    <p className="text-[10px] text-amber-700 font-mono">Draft</p>
+                  <div className="text-right shrink-0 ml-2">
+                    <span className="font-mono font-medium text-[#22231F] block">₹{p.price}</span>
+                    <span
+                      className={`inline-block mt-0.5 text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                        p.status === "published"
+                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                          : "bg-amber-50 text-amber-800 border-amber-200"
+                      }`}
+                    >
+                      {p.status === "published" ? "Published" : "Draft"}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </AdminCard>
 
-          {/* Quick Shortcuts */}
-          <div className="bg-white border border-[#E1E3E5] rounded-lg p-4 space-y-3 shadow-2xs">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#202223] font-mono">
-              Quick Shortcuts
-            </h3>
-            <div className="space-y-1.5 text-xs">
+          {/* Studio Quick Navigation */}
+          <AdminCard
+            title="Studio Navigation"
+            subtitle="Direct operational shortcuts"
+            padding={false}
+          >
+            <div className="divide-y divide-[#E8E5DD] text-xs">
               <Link
                 href="/admin/assets"
-                className="flex items-center justify-between p-2 rounded hover:bg-[#F6F6F7] text-[#202223] font-medium transition-colors"
+                className="flex items-center justify-between p-3.5 hover:bg-[#FAF8F5] text-[#22231F] transition-colors group"
               >
-                <span>Digital Asset Vault</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-[#6D7175]" />
+                <div className="flex items-center space-x-2.5">
+                  <FileArchive className="w-4 h-4 text-[#85866A]" />
+                  <span>Digital Asset Vault</span>
+                </div>
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#85847D] group-hover:text-[#22231F] transition-colors" />
               </Link>
+
               <Link
                 href="/admin/collections"
-                className="flex items-center justify-between p-2 rounded hover:bg-[#F6F6F7] text-[#202223] font-medium transition-colors"
+                className="flex items-center justify-between p-3.5 hover:bg-[#FAF8F5] text-[#22231F] transition-colors group"
               >
-                <span>Manage Collections</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-[#6D7175]" />
+                <div className="flex items-center space-x-2.5">
+                  <Layers className="w-4 h-4 text-[#85866A]" />
+                  <span>Studio Collections</span>
+                </div>
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#85847D] group-hover:text-[#22231F] transition-colors" />
               </Link>
+
               <Link
                 href="/admin/settings"
-                className="flex items-center justify-between p-2 rounded hover:bg-[#F6F6F7] text-[#202223] font-medium transition-colors"
+                className="flex items-center justify-between p-3.5 hover:bg-[#FAF8F5] text-[#22231F] transition-colors group"
               >
-                <span>Configure Integrations</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-[#6D7175]" />
+                <div className="flex items-center space-x-2.5">
+                  <ShieldCheck className="w-4 h-4 text-[#85866A]" />
+                  <span>Integrations & Security</span>
+                </div>
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#85847D] group-hover:text-[#22231F] transition-colors" />
               </Link>
+
               <Link
-                href="/"
+                href="/shop"
                 target="_blank"
-                className="flex items-center justify-between p-2 rounded bg-[#F6F6F7] hover:bg-[#EAEAEA] text-[#202223] font-semibold transition-colors"
+                className="flex items-center justify-between p-3.5 bg-[#FAF8F5] hover:bg-[#F2EFE8] text-[#22231F] font-medium transition-colors group"
               >
-                <span>View Online Store</span>
-                <ExternalLink className="w-3.5 h-3.5 text-[#6D7175]" />
+                <div className="flex items-center space-x-2.5">
+                  <ExternalLink className="w-4 h-4 text-[#85866A]" />
+                  <span>View Customer Storefront</span>
+                </div>
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#85847D] group-hover:text-[#22231F] transition-colors" />
               </Link>
             </div>
-          </div>
+          </AdminCard>
         </div>
       </div>
     </div>

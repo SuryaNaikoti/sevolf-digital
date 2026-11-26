@@ -68,14 +68,23 @@ export async function GET(request: Request) {
     const entitlements = order.download_entitlements || [];
     const entitlementIds = entitlements.map((e: any) => e.id);
     const tokenMap = new Map<string, string>();
+    let emailDeliveryStatus: "queued" | "delivered" | "failed" = "queued";
 
     if (entitlementIds.length > 0) {
       const { data: outboxRows } = await adminClient
         .from("order_delivery_outbox")
-        .select("entitlement_id, encrypted_token_payload")
+        .select("entitlement_id, encrypted_token_payload, delivery_status")
         .in("entitlement_id", entitlementIds);
 
       if (outboxRows && outboxRows.length > 0) {
+        const allDelivered = outboxRows.every((r: any) => r.delivery_status === "delivered");
+        const anyFailed = outboxRows.some((r: any) => r.delivery_status === "failed");
+        if (allDelivered) {
+          emailDeliveryStatus = "delivered";
+        } else if (anyFailed) {
+          emailDeliveryStatus = "failed";
+        }
+
         for (const row of outboxRows) {
           if (row.encrypted_token_payload) {
             try {
@@ -99,6 +108,7 @@ export async function GET(request: Request) {
         totalAmount: order.total_amount,
         status: order.status,
         paymentStatus: order.payment_status,
+        emailDeliveryStatus,
         createdAt: order.created_at,
         items: order.order_items || [],
         entitlements: entitlements.map((e: any) => ({

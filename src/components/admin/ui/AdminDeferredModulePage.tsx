@@ -1,4 +1,4 @@
-import { Layers, Boxes, CalendarClock, Star, Clock, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import {
   AdminPageHeader,
@@ -19,28 +19,30 @@ export default function AdminDeferredModulePage({
   icon: any;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 max-w-5xl">
       <AdminPageHeader
         title={title}
-        subtitle="This module is planned and architected but deferred from primary navigation in staging review."
+        subtitle="This studio module is architected and reserved for post-launch activation."
         actions={
-          <AdminButton variant="secondary" icon={ArrowLeft}>
-            <Link href="/admin" className="flex items-center space-x-1.5">
-              <span>Return to Overview</span>
-            </Link>
-          </AdminButton>
+          <Link href="/admin">
+            <AdminButton variant="secondary" icon={ArrowLeft}>
+              Return to Overview
+            </AdminButton>
+          </Link>
         }
       />
 
       <AdminCard>
         <AdminEmptyState
           icon={Icon}
-          title={`${title} Module Deferred`}
+          title={`${title} Module Reserved`}
           description={description}
           action={
-            <div className="text-xs text-[#6D7175] bg-[#FAFBFB] p-3 rounded border border-[#E1E3E5] max-w-md mx-auto">
-              <strong className="text-[#202223] block mb-1">Prerequisite for Activation:</strong>
-              {prerequisite}
+            <div className="text-xs text-[#85847D] bg-[#FAF8F5] p-4 rounded-lg border border-[#E8E5DD] max-w-md mx-auto text-left space-y-1">
+              <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-[#22231F] block">
+                Prerequisite for Live Activation:
+              </span>
+              <p className="font-sans leading-relaxed text-[#22231F]">{prerequisite}</p>
             </div>
           }
         />

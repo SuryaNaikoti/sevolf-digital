@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Rocket,
@@ -17,17 +17,19 @@ import {
   Tag,
   BarChart3,
   Settings,
-  ExternalLink,
-  Store,
-  KeyRound,
   ShieldCheck,
+  KeyRound,
   LogOut,
+  ChevronRight,
+  ExternalLink,
+  Sparkles,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface AdminSidebarProps {
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
+  collapsed?: boolean;
+  setCollapsed?: (collapsed: boolean) => void;
 }
 
 interface NavItem {
@@ -35,6 +37,8 @@ interface NavItem {
   href: string;
   icon: any;
   badge?: string;
+  badgeVariant?: "success" | "warning" | "accent";
+  external?: boolean;
 }
 
 interface NavSection {
@@ -42,24 +46,16 @@ interface NavSection {
   items: NavItem[];
 }
 
-// Strictly active V16 navigation modules (Deferred modules cleanly removed to eliminate 404s)
 const NAV_SECTIONS: NavSection[] = [
   {
-    title: "SEVOLF",
+    title: "STUDIO",
     items: [
       { name: "Overview", href: "/admin", icon: LayoutDashboard },
-      { name: "Launch Readiness", href: "/admin/readiness", icon: Rocket, badge: "GATE" },
+      { name: "Launch Readiness", href: "/admin/readiness", icon: Rocket, badge: "GATE", badgeVariant: "warning" },
     ],
   },
   {
-    title: "SALES CHANNELS",
-    items: [
-      { name: "Online Store", href: "/shop", icon: Globe },
-      { name: "Content", href: "/admin/content", icon: FileText },
-    ],
-  },
-  {
-    title: "PRODUCTS",
+    title: "CATALOGUE & ASSETS",
     items: [
       { name: "Products", href: "/admin/products", icon: Package },
       { name: "Collections", href: "/admin/collections", icon: Layers },
@@ -67,7 +63,7 @@ const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: "SALES",
+    title: "COMMERCE & ORDERS",
     items: [
       { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
       { name: "Customers", href: "/admin/customers", icon: Users },
@@ -76,24 +72,31 @@ const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: "MARKETING",
+    title: "STORE & CONTENT",
     items: [
+      { name: "Online Store", href: "/shop", icon: Globe, external: true },
+      { name: "Content & CMS", href: "/admin/content", icon: FileText },
       { name: "Discounts", href: "/admin/discounts", icon: Tag },
       { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     ],
   },
   {
-    title: "SETTINGS",
+    title: "PREFERENCES & SYSTEM",
     items: [
-      { name: "General & Store", href: "/admin/settings", icon: Settings },
-      { name: "Payments Gateway", href: "/admin/settings#payments", icon: CreditCard },
+      { name: "General Settings", href: "/admin/settings", icon: Settings },
+      { name: "Gateway & Vault", href: "/admin/settings#payments", icon: CreditCard },
       { name: "Integrations Registry", href: "/admin/settings#integrations", icon: KeyRound },
       { name: "Security & RBAC", href: "/admin/settings#security", icon: ShieldCheck },
     ],
   },
 ];
 
-export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
+export function AdminSidebar({
+  mobileOpen,
+  setMobileOpen,
+  collapsed = false,
+  setCollapsed,
+}: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -107,118 +110,155 @@ export function AdminSidebar({ mobileOpen, setMobileOpen }: AdminSidebarProps) {
     }
   };
 
+  const isActive = (href: string) => {
+    if (href.includes("#")) {
+      return pathname === href.split("#")[0];
+    }
+    if (href === "/admin") {
+      return pathname === "/admin";
+    }
+    return pathname.startsWith(href);
+  };
+
   return (
     <>
       {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-stone-900/50 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-[#161715]/70 backdrop-blur-xs lg:hidden transition-opacity"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
-      {/* Sidebar: Shopify-inspired Charcoal Compact Sidebar (240px) */}
+      {/* Sidebar shell: #20211F dark charcoal luxury studio look */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-60 bg-[#1A1A1A] text-[#C9CCCF] border-r border-[#2C2C2C] flex flex-col transition-transform duration-200 ease-in-out lg:translate-x-0 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 bottom-0 left-0 z-50 bg-[#20211F] text-[#D8D6CE] flex flex-col transition-all duration-300 ease-in-out border-r border-[#2C2D2A]
+          ${collapsed ? "w-18" : "w-64"}
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
       >
-        {/* Store Selector Header */}
-        <div className="h-14 flex items-center justify-between px-3.5 border-b border-[#2C2C2C] bg-[#141414]">
-          <div className="flex items-center space-x-2.5 min-w-0">
-            <div className="w-7 h-7 rounded-md bg-[#2C2C2C] border border-[#3D3D3D] flex items-center justify-center text-white shrink-0">
-              <Store className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="leading-tight truncate">
-              <p className="text-xs font-semibold text-white truncate">SEVOLF Studio</p>
-              <p className="text-[10px] text-[#8C9196] font-mono truncate">sevolf-digital.myshop</p>
-            </div>
-          </div>
+        {/* Top Studio Brand Header */}
+        <div className="h-16 px-5 border-b border-[#2C2D2A] flex items-center justify-between shrink-0">
           <Link
-            href="/"
-            target="_blank"
-            className="p-1.5 text-[#8C9196] hover:text-white rounded hover:bg-[#2C2C2C] transition-colors"
-            title="View online store"
+            href="/admin"
+            className="flex items-center space-x-2.5 overflow-hidden group"
+            onClick={() => setMobileOpen(false)}
           >
-            <ExternalLink className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded bg-[#85866A] text-[#20211F] flex items-center justify-center font-serif text-base font-medium shrink-0 shadow-xs group-hover:bg-[#97987C] transition-colors">
+              S
+            </div>
+            {!collapsed && (
+              <div className="flex flex-col min-w-0">
+                <span className="font-serif tracking-tight text-sm font-normal text-white uppercase leading-none">
+                  SEVOLF
+                </span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#85847D] mt-1">
+                  Control Center
+                </span>
+              </div>
+            )}
           </Link>
         </div>
 
-        {/* Scrollable Navigation */}
-        <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-4 text-xs font-medium">
+        {/* Scrollable Navigation Sections */}
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           {NAV_SECTIONS.map((section) => (
-            <div key={section.title} className="space-y-0.5">
-              <div className="px-2 py-1 text-[10px] font-mono tracking-wider text-[#6D7175] uppercase font-bold">
-                {section.title}
+            <div key={section.title} className="space-y-1">
+              {!collapsed && (
+                <div className="px-3 py-1 text-[10px] font-mono uppercase tracking-[0.16em] text-[#696863] font-medium">
+                  {section.title}
+                </div>
+              )}
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  const active = isActive(item.href);
+                  const Icon = item.icon;
+
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noopener noreferrer" : undefined}
+                      onClick={() => setMobileOpen(false)}
+                      title={collapsed ? item.name : undefined}
+                      className={`group flex items-center justify-between px-3 py-2 rounded-md text-xs font-sans transition-all duration-150 ${
+                        active
+                          ? "bg-[#2F302C] text-white font-medium shadow-xs"
+                          : "text-[#A8A69E] hover:text-white hover:bg-[#282926]"
+                      } ${collapsed ? "justify-center px-0" : ""}`}
+                    >
+                      <div className="flex items-center space-x-2.5 min-w-0">
+                        <Icon
+                          className={`w-4 h-4 shrink-0 transition-colors ${
+                            active
+                              ? "text-[#85866A]"
+                              : "text-[#7A7973] group-hover:text-[#D8D6CE]"
+                          }`}
+                        />
+                        {!collapsed && (
+                          <span className="truncate">{item.name}</span>
+                        )}
+                      </div>
+
+                      {!collapsed && (
+                        <div className="flex items-center space-x-1.5 shrink-0 ml-2">
+                          {item.badge && (
+                            <span
+                              className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded font-medium ${
+                                item.badgeVariant === "warning"
+                                  ? "bg-[#332A1D] text-[#E0B266] border border-[#524128]"
+                                  : "bg-[#2A2E26] text-[#A5C299] border border-[#3E4737]"
+                              }`}
+                            >
+                              {item.badge}
+                            </span>
+                          )}
+                          {item.external && (
+                            <ExternalLink className="w-3 h-3 text-[#696863] group-hover:text-[#A8A69E]" />
+                          )}
+                        </div>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                const isExternal = item.href.startsWith("/shop") || item.href === "/";
-                const isActive =
-                  !isExternal &&
-                  (item.href === "/admin"
-                    ? pathname === "/admin"
-                    : pathname.startsWith(item.href.split("#")[0]));
-
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    target={isExternal ? "_blank" : undefined}
-                    onClick={() => setMobileOpen(false)}
-                    className={`flex items-center justify-between px-2.5 py-1.5 rounded text-xs transition-colors ${
-                      isActive
-                        ? "bg-[#2C2C2C] text-white font-semibold"
-                        : "text-[#B5B5B5] hover:bg-[#242424] hover:text-white"
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2.5 min-w-0">
-                      <Icon
-                        className={`w-4 h-4 shrink-0 ${
-                          isActive ? "text-white" : "text-[#8C9196]"
-                        }`}
-                      />
-                      <span className="truncate">{item.name}</span>
-                    </div>
-
-                    {item.badge && (
-                      <span className="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 border border-amber-800/80">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
             </div>
           ))}
-        </nav>
+        </div>
 
-        {/* Admin User Profile Footer */}
-        <div className="h-13 px-3 border-t border-[#2C2C2C] bg-[#141414] flex items-center justify-between">
-          <div className="flex items-center space-x-2.5 min-w-0">
-            <div className="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-              SN
+        {/* Compact Admin Profile & Logout Footer */}
+        <div className="p-3 border-t border-[#2C2D2A] bg-[#1B1C1A] shrink-0">
+          <div
+            className={`flex items-center justify-between rounded-md p-2 bg-[#242522] border border-[#2F302C] ${
+              collapsed ? "justify-center p-1.5" : ""
+            }`}
+          >
+            <div className="flex items-center space-x-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-full bg-[#85866A]/20 border border-[#85866A]/40 text-[#85866A] flex items-center justify-center text-[10px] font-mono font-medium shrink-0">
+                AD
+              </div>
+              {!collapsed && (
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-medium text-white truncate leading-none">
+                    Administrator
+                  </span>
+                  <span className="text-[10px] font-mono text-[#85847D] truncate mt-0.5">
+                    suryanaikoti@gmail.com
+                  </span>
+                </div>
+              )}
             </div>
-            <div className="leading-tight truncate">
-              <p className="text-xs font-medium text-white truncate">Administrator</p>
-              <p className="text-[10px] text-[#8C9196] font-mono truncate">suryanaikoti@gmail.com</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-1">
-            <Link
-              href="/admin/settings"
-              className="p-1.5 text-[#8C9196] hover:text-white rounded hover:bg-[#2C2C2C] transition-colors"
-              title="Admin settings & security"
-            >
-              <Settings className="w-3.5 h-3.5" />
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="p-1.5 text-[#8C9196] hover:text-red-400 rounded hover:bg-[#2C2C2C] transition-colors"
-              title="Sign out of control center"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-            </button>
+
+            {!collapsed && (
+              <button
+                onClick={handleLogout}
+                title="Sign out of SEVOLF Control Center"
+                className="p-1.5 rounded text-[#85847D] hover:text-[#A8534C] hover:bg-[#2C2D2A] transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
       </aside>

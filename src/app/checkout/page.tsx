@@ -27,7 +27,7 @@ declare global {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, total, clearCart } = useCart();
-  const { currency } = useCurrency();
+  const { currency, setCurrency } = useCurrency();
 
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
@@ -67,14 +67,14 @@ export default function CheckoutPage() {
         return;
       }
 
-      const { orderId, orderNumber, amount, gatewayOrderId, keyId, isTestMode } = data;
+      const { orderId, orderNumber, amount, currency: responseCurrency, gatewayOrderId, keyId, isTestMode } = data;
 
       // 2. If Razorpay SDK is available and key is configured, trigger standard checkout modal
       if (typeof window !== "undefined" && window.Razorpay && keyId && !keyId.includes("placeholder")) {
         const options = {
           key: keyId,
           amount: Math.round(amount * 100),
-          currency: currency || "INR",
+          currency: responseCurrency || currency || "INR",
           name: "SEVOLF Digital",
           description: `Order ${orderNumber}`,
           order_id: gatewayOrderId,
@@ -246,7 +246,14 @@ export default function CheckoutPage() {
                     </label>
                     <select
                       value={country}
-                      onChange={(e) => setCountry(e.target.value)}
+                      onChange={(e) => {
+                        const nextCountry = e.target.value;
+                        setCountry(nextCountry);
+                        if (nextCountry === "India") setCurrency("INR");
+                        else if (nextCountry === "United States") setCurrency("USD");
+                        else if (nextCountry === "United Kingdom") setCurrency("GBP");
+                        else if (nextCountry === "European Union") setCurrency("EUR");
+                      }}
                       className="w-full text-xs bg-[#FAF9F5] border border-[#DDD8CD] rounded-xs px-3.5 py-2.5 text-[#292B27] focus:outline-hidden focus:border-[#292B27]"
                     >
                       <option value="India">India (INR • UPI & Cards)</option>
@@ -263,9 +270,6 @@ export default function CheckoutPage() {
               <div className="p-5 sm:p-6 bg-white border border-[#DDD8CD] rounded-sm space-y-4 shadow-2xs">
                 <div className="flex items-center justify-between border-b border-[#DDD8CD] pb-2">
                   <h2 className="font-serif text-base font-medium text-[#292B27]">Payment Gateway</h2>
-                  <span className="text-[10px] uppercase font-mono font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                    256-Bit SSL Encrypted
-                  </span>
                 </div>
 
                 <div className="p-4 border border-[#292B27] bg-[#F5F2EB]/50 rounded-xs flex items-center justify-between">

@@ -2,13 +2,13 @@ import React from "react";
 import Link from "next/link";
 import { LucideIcon } from "lucide-react";
 
-// 1. AdminPageHeader: Consistent title, subtitle, and primary/secondary actions
+// 1. AdminPageHeader: Editorial serif title, warm muted subtitle, metadata badges & studio action buttons
 export interface AdminPageHeaderProps {
   title: string;
   subtitle?: string;
   badge?: {
     text: string;
-    variant?: "success" | "warning" | "neutral" | "error";
+    variant?: "success" | "warning" | "neutral" | "error" | "accent";
   };
   backUrl?: string;
   actions?: React.ReactNode;
@@ -22,24 +22,34 @@ export function AdminPageHeader({
   actions,
 }: AdminPageHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
-      <div className="space-y-0.5">
-        <div className="flex items-center space-x-2.5">
-          <h1 className="text-xl font-bold text-[#202223] tracking-tight">{title}</h1>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E8E5DD]/70">
+      <div className="space-y-1">
+        <div className="flex items-center flex-wrap gap-2.5">
+          <h1 className="text-2xl sm:text-3xl font-serif font-light text-[#22231F] tracking-tight">
+            {title}
+          </h1>
           {badge && (
             <AdminStatusBadge variant={badge.variant || "neutral"}>
               {badge.text}
             </AdminStatusBadge>
           )}
         </div>
-        {subtitle && <p className="text-xs text-[#6D7175]">{subtitle}</p>}
+        {subtitle && (
+          <p className="text-xs sm:text-[13px] text-[#85847D] max-w-3xl leading-relaxed font-sans">
+            {subtitle}
+          </p>
+        )}
       </div>
-      {actions && <div className="flex items-center space-x-2 shrink-0">{actions}</div>}
+      {actions && (
+        <div className="flex items-center space-x-2.5 shrink-0 self-start sm:self-auto pt-1 sm:pt-0">
+          {actions}
+        </div>
+      )}
     </div>
   );
 }
 
-// 2. AdminCard: Uniform white card surface with crisp 1px neutral border
+// 2. AdminCard: White card with warm architectural border (#E8E5DD) and subtle warmth
 export interface AdminCardProps {
   title?: string;
   subtitle?: string;
@@ -60,23 +70,27 @@ export function AdminCard({
   padding = true,
 }: AdminCardProps) {
   return (
-    <div className={`bg-white border border-[#E1E3E5] rounded-lg shadow-2xs overflow-hidden ${className}`}>
+    <div
+      className={`bg-white border border-[#E8E5DD] rounded-lg shadow-[0_1px_3px_rgba(34,35,31,0.02)] overflow-hidden transition-all ${className}`}
+    >
       {(title || action) && (
-        <div className="px-4 py-3 border-b border-[#E1E3E5] flex items-center justify-between bg-[#FAFBFB]">
-          <div>
+        <div className="px-5 py-3.5 border-b border-[#E8E5DD] flex items-center justify-between bg-[#FDFCFA]">
+          <div className="space-y-0.5">
             {title && (
-              <h2 className="text-xs font-semibold text-[#202223] uppercase tracking-wider font-mono">
+              <h2 className="text-[11px] font-mono uppercase tracking-[0.12em] font-medium text-[#22231F]">
                 {title}
               </h2>
             )}
-            {subtitle && <p className="text-[11px] text-[#6D7175]">{subtitle}</p>}
+            {subtitle && (
+              <p className="text-xs text-[#85847D] font-sans">{subtitle}</p>
+            )}
           </div>
-          {action && <div>{action}</div>}
+          {action && <div className="shrink-0">{action}</div>}
         </div>
       )}
-      <div className={padding ? "p-4 sm:p-5" : ""}>{children}</div>
+      <div className={padding ? "p-5 sm:p-6" : ""}>{children}</div>
       {footer && (
-        <div className="px-4 py-3 border-t border-[#E1E3E5] bg-[#FAFBFB] text-xs text-[#6D7175]">
+        <div className="px-5 py-3 border-t border-[#E8E5DD] bg-[#FAF8F5] text-xs text-[#85847D]">
           {footer}
         </div>
       )}
@@ -84,9 +98,9 @@ export function AdminCard({
   );
 }
 
-// 3. AdminStatusBadge: High-clarity status pills
+// 3. AdminStatusBadge: Restrained, sophisticated status pills
 export interface AdminStatusBadgeProps {
-  variant?: "success" | "warning" | "error" | "neutral" | "info";
+  variant?: "success" | "warning" | "error" | "neutral" | "info" | "accent";
   children: React.ReactNode;
   className?: string;
 }
@@ -97,25 +111,26 @@ export function AdminStatusBadge({
   className = "",
 }: AdminStatusBadgeProps) {
   const variantStyles = {
-    success: "bg-emerald-50 text-emerald-800 border-emerald-200",
-    warning: "bg-amber-50 text-amber-800 border-amber-200",
-    error: "bg-red-50 text-red-800 border-red-200",
-    neutral: "bg-[#F6F6F7] text-[#6D7175] border-[#E1E3E5]",
-    info: "bg-blue-50 text-blue-800 border-blue-200",
+    success: "bg-[#F2F5F0] text-[#55694B] border-[#D4DCCF]",
+    warning: "bg-[#FBF7F0] text-[#8C6D34] border-[#EADFCB]",
+    error: "bg-[#FDF4F3] text-[#9A423B] border-[#F0D0CD]",
+    neutral: "bg-[#F7F5F0] text-[#7A7870] border-[#E8E5DD]",
+    info: "bg-[#F3F6F9] text-[#47637D] border-[#D5E1ED]",
+    accent: "bg-[#F6F6F2] text-[#63644F] border-[#D9DAC6]",
   };
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider border ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-[0.08em] font-medium border ${variantStyles[variant]} ${className}`}
     >
       {children}
     </span>
   );
 }
 
-// 4. AdminButton: Primary & Secondary actions with clear disabled reasoning
+// 4. AdminButton: Minimalist studio button with tactile precision
 export interface AdminButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "danger" | "plain";
+  variant?: "primary" | "secondary" | "danger" | "plain" | "accent";
   icon?: LucideIcon;
   restrictedReason?: string;
 }
@@ -123,56 +138,63 @@ export interface AdminButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
 export function AdminButton({
   variant = "secondary",
   icon: Icon,
-  children,
-  disabled,
   restrictedReason,
+  children,
   className = "",
+  disabled,
   ...props
 }: AdminButtonProps) {
-  const baseStyles = "inline-flex items-center justify-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-md shadow-2xs transition-colors shrink-0";
-  
-  const variantStyles = {
-    primary: "bg-[#008060] hover:bg-[#006e52] text-white disabled:bg-[#008060]/70 disabled:cursor-not-allowed",
-    secondary: "bg-white border border-[#BABFC3] text-[#202223] hover:bg-[#F6F6F7] disabled:bg-[#F6F6F7] disabled:text-[#8C9196] disabled:border-[#D2D5D8] disabled:cursor-not-allowed",
-    danger: "bg-red-600 hover:bg-red-700 text-white disabled:bg-red-300 disabled:cursor-not-allowed",
-    plain: "text-[#008060] hover:underline shadow-none px-0 py-0 disabled:text-[#8C9196] disabled:no-underline disabled:cursor-not-allowed",
+  const base =
+    "inline-flex items-center justify-center space-x-1.5 px-3.5 py-1.5 rounded-md text-xs font-sans font-medium transition-all duration-150 focus:outline-hidden disabled:cursor-not-allowed";
+
+  const variants = {
+    primary:
+      "bg-[#20211F] text-white hover:bg-[#2F302D] active:bg-[#181917] disabled:bg-[#85847D]/30 disabled:text-[#85847D] shadow-xs",
+    secondary:
+      "bg-white border border-[#DCD9D0] text-[#22231F] hover:bg-[#F7F5F0] hover:border-[#85866A] active:bg-[#EFECE5] disabled:bg-[#F7F5F0] disabled:text-[#85847D]/50 shadow-xs",
+    accent:
+      "bg-[#85866A] text-white hover:bg-[#737459] active:bg-[#60614A] disabled:bg-[#85866A]/40 shadow-xs",
+    danger:
+      "bg-white border border-[#E8C5C2] text-[#A8534C] hover:bg-[#FDF4F3] active:bg-[#F8E3E1] disabled:opacity-50",
+    plain:
+      "text-[#63644F] hover:text-[#22231F] hover:bg-[#F7F5F0] rounded p-1.5",
   };
 
   return (
     <button
-      disabled={disabled}
-      title={disabled && restrictedReason ? `Restricted: ${restrictedReason}` : undefined}
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
       {...props}
+      disabled={disabled || !!restrictedReason}
+      title={restrictedReason || props.title}
+      className={`${base} ${variants[variant]} ${className}`}
     >
-      {Icon && <Icon className="w-3.5 h-3.5" />}
+      {Icon && <Icon className="w-3.5 h-3.5 shrink-0 opacity-80" />}
       <span>{children}</span>
     </button>
   );
 }
 
-// 5. AdminEmptyState: Professional Shopify-style empty state box
-export interface AdminEmptyStateProps {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  action?: React.ReactNode;
-}
-
+// 5. AdminEmptyState: Generous editorial empty state
 export function AdminEmptyState({
   icon: Icon,
   title,
   description,
   action,
-}: AdminEmptyStateProps) {
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  action?: React.ReactNode;
+}) {
   return (
-    <div className="p-10 text-center space-y-3">
-      <div className="w-10 h-10 rounded-full bg-[#F6F6F7] border border-[#E1E3E5] mx-auto flex items-center justify-center text-[#6D7175]">
-        <Icon className="w-4 h-4" />
+    <div className="py-14 px-4 text-center max-w-md mx-auto space-y-3.5">
+      <div className="w-12 h-12 rounded-full bg-[#F7F5F0] border border-[#E8E5DD] mx-auto flex items-center justify-center text-[#85866A]">
+        <Icon className="w-5 h-5 stroke-[1.5]" />
       </div>
       <div className="space-y-1">
-        <h3 className="text-xs font-semibold text-[#202223]">{title}</h3>
-        <p className="text-xs text-[#6D7175] max-w-sm mx-auto leading-normal">{description}</p>
+        <h3 className="text-base font-serif font-normal text-[#22231F] tracking-tight">
+          {title}
+        </h3>
+        <p className="text-xs text-[#85847D] leading-relaxed font-sans">{description}</p>
       </div>
       {action && <div className="pt-2">{action}</div>}
     </div>
