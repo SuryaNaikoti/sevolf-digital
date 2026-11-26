@@ -99,7 +99,7 @@ export default function OrderSuccessPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#22231F]">
-      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-16 space-y-10">
+      <div className="max-w-[920px] mx-auto px-5 sm:px-8 py-10 sm:py-14 space-y-8">
         {loading ? (
           <div className="bg-white border border-[#E8E5DD] rounded-sm p-12 text-center space-y-3">
             <RefreshCw className="w-7 h-7 text-[#657052] animate-spin mx-auto" />
@@ -178,14 +178,14 @@ export default function OrderSuccessPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-[#FAF8F5] border border-[#E8E5DD] rounded-xs p-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 bg-[#FAF8F5] border border-[#E8E5DD] rounded-xs p-5">
                 <div>
-                  <span className="text-[#77766E] block text-[11px] uppercase tracking-wider">Order Reference</span>
-                  <span className="font-mono font-semibold text-[#22231F] mt-0.5 block">{order.orderNumber}</span>
+                  <span className="text-[#77766E] block text-[11px] font-mono uppercase tracking-wider">Order Reference</span>
+                  <span className="font-mono text-sm font-semibold text-[#22231F] mt-1 block">{order.orderNumber}</span>
                 </div>
                 <div>
-                  <span className="text-[#77766E] block text-[11px] uppercase tracking-wider">Purchase Date</span>
-                  <span className="font-medium text-[#22231F] mt-0.5 block">
+                  <span className="text-[#77766E] block text-[11px] font-mono uppercase tracking-wider">Purchase Date</span>
+                  <span className="text-sm font-medium text-[#22231F] mt-1 block">
                     {new Date(order.createdAt).toLocaleDateString("en-IN", {
                       day: "numeric",
                       month: "short",
@@ -194,8 +194,8 @@ export default function OrderSuccessPage() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#77766E] block text-[11px] uppercase tracking-wider">Amount Paid</span>
-                  <span className="font-mono font-semibold text-[#22231F] mt-0.5 block">
+                  <span className="text-[#77766E] block text-[11px] font-mono uppercase tracking-wider">Amount Paid</span>
+                  <span className="font-mono text-sm font-semibold text-[#22231F] mt-1 block">
                     {order.currency} {Number(order.totalAmount).toLocaleString()}
                   </span>
                 </div>
@@ -234,8 +234,8 @@ export default function OrderSuccessPage() {
                       key={item.id}
                       className="border border-[#E8E5DD] rounded-xs p-5 bg-[#FAF8F5]/60 space-y-4"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-20 bg-[#EAE5DA] rounded-xs overflow-hidden border border-[#DDD8CD] shrink-0 flex items-center justify-center">
+                      <div className="flex items-center gap-5">
+                        <div className="w-20 h-24 sm:w-24 sm:h-32 bg-[#EAE5DA] rounded-xs overflow-hidden border border-[#DDD8CD] shrink-0 flex items-center justify-center">
                           {item.coverImageUrl ? (
                             <img
                               src={item.coverImageUrl}
@@ -243,11 +243,11 @@ export default function OrderSuccessPage() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <BookOpen className="w-6 h-6 text-[#657052]" />
+                            <BookOpen className="w-7 h-7 text-[#657052]" />
                           )}
                         </div>
-                        <div className="min-w-0">
-                          <h3 className="font-serif text-lg font-normal text-[#22231F] truncate">
+                        <div className="min-w-0 space-y-1">
+                          <h3 className="font-serif text-xl font-normal text-[#22231F] truncate">
                             {item.productName}
                           </h3>
                           <p className="text-xs text-[#77766E]">
@@ -315,12 +315,12 @@ export default function OrderSuccessPage() {
 
             {/* 4. Digital Library */}
             <section className="bg-[#EAE5DA]/60 border border-[#DDD8CD] rounded-sm p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <h2 className="font-serif text-lg font-normal text-[#22231F]">
-                  Access anytime in your Digital Library
+                  Access your downloads in My Digital Library
                 </h2>
                 <p className="text-xs text-[#77766E] max-w-xl leading-relaxed">
-                  Your licensed files are available in your account library for 30 days (up to 10 downloads per file). Sign in with {order.customerEmail} to manage your downloads.
+                  Your library tracks active order entitlements for {order.customerEmail}. Each download link is valid for 30 days and permits up to 10 downloads per file.
                 </p>
               </div>
               <Link
@@ -338,7 +338,7 @@ export default function OrderSuccessPage() {
                 <h2 className="font-serif text-2xl font-normal text-[#22231F]">
                   Something else you might love.
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {order.recommendations.map((rec) => (
                     <Link
                       key={rec.id}
