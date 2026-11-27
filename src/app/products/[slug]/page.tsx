@@ -4,6 +4,7 @@ import { getProductBySlug, getRelatedProducts } from "@/services/products";
 import { getAdminProductBySlug } from "@/services/admin/products";
 import { requireAdminSession } from "@/lib/auth/adminGate";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
+import { MitthuLandingClient } from "@/components/products/MitthuLandingClient";
 
 interface ProductSlugPageProps {
   params: Promise<{
@@ -48,7 +49,11 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
     notFound();
   }
 
-  const relatedProducts = await getRelatedProducts(product.id, 3);
+  const isMitthu =
+    product.id === "4959d0a1-2512-4a96-9cb9-bb78b37fa0da" ||
+    product.slug === "mitthus-fun-learning-book";
+
+  const relatedProducts = isMitthu ? [] : await getRelatedProducts(product.id, 3);
 
   return (
     <>
@@ -57,7 +62,11 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
           Admin Preview Mode — This product is currently <strong>{product.status.toUpperCase()}</strong> and hidden from public shoppers.
         </div>
       )}
-      <ProductDetailClient product={product} relatedProducts={relatedProducts} />
+      {isMitthu ? (
+        <MitthuLandingClient product={product} />
+      ) : (
+        <ProductDetailClient product={product} relatedProducts={relatedProducts} />
+      )}
     </>
   );
 }
