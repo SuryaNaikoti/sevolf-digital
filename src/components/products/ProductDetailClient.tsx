@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -32,6 +32,21 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "included" | "specs" | "licence">("overview");
+  const [hideStickyBar, setHideStickyBar] = useState(false);
+  const lastSectionRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = lastSectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setHideStickyBar(entry.isIntersecting);
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const allImages = [
     product.coverImage,
@@ -308,8 +323,10 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
         </div>
       </div>
 
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
+      {/* Sentinel for last section before footer */}
+      <div ref={lastSectionRef}>
+        {/* Related Products */}
+        {relatedProducts.length > 0 && (
         <div className="border-t border-[#DDD8CD] pt-10 sm:pt-16">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#292B27]">
@@ -329,10 +346,15 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
           </div>
         </div>
       )}
+      </div>
 
-      {/* 3. Context-Aware Sticky Purchase Action for Mobile (Hidden if CartDrawer is active) */}
+      {/* 3. Context-Aware Sticky Purchase Action for Mobile (Hidden if CartDrawer is active or scrolled to last section) */}
       {!isCartOpen && (
-        <div className="md:hidden fixed bottom-14 left-0 right-0 z-30 bg-[#F5F2EB]/95 backdrop-blur-md border-t border-[#DDD8CD] px-4 py-2.5 shadow-[0_-4px_16px_rgba(41,43,39,0.08)] flex items-center justify-between gap-4">
+        <div
+          className={`md:hidden fixed bottom-14 left-0 right-0 z-30 bg-[#F5F2EB]/95 backdrop-blur-md border-t border-[#DDD8CD] px-4 py-2.5 shadow-[0_-4px_16px_rgba(41,43,39,0.08)] flex items-center justify-between gap-4 transition-all duration-300 ${
+            hideStickyBar ? "translate-y-full opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
+          }`}
+        >
           <div>
             <span className="text-[10px] uppercase font-semibold text-[#77766E] block font-sans">Price</span>
             <span className="font-serif text-xl font-bold text-[#292B27]">
